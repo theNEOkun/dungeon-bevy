@@ -1,3 +1,20 @@
+mod map;
+
+mod prelude {
+    pub use bevy::prelude::*;
+    pub const SCREEN_WIDTH: i32 = 80;
+    pub const SCREEN_HEIGHT: i32 = 50;
+}
+
+use prelude::*;
+
+fn setup_camera(mut commands: Commands) {
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+}
+
 fn main() {
-    println!("Hello, world!");
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_startup_system(setup_camera)
+        .run();
 }
