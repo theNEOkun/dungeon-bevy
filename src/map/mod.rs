@@ -1,5 +1,4 @@
 mod position;
-mod components;
 
 use crate::prelude::*;
 pub use position::*;
@@ -29,7 +28,7 @@ pub fn map_idx(point: &Position) -> usize {
 /// Turns x and y into index
 ///
 /// applies map_idx on a new point
-pub fn map_idx_int(x: i32, y: i32) -> usize {
+pub fn map_idx_int(x: f32, y: f32) -> usize {
     map_idx(&Position::new(x, y))
 }
 
@@ -70,7 +69,7 @@ impl Map {
     /// @param point is the point to check 
     /// @returns true if it is
     pub fn in_bounds(&self, point: &Position) -> bool {
-        point.x >= 0 && point.x < SCREEN_WIDTH && point.y >= 0 && point.y < SCREEN_HEIGHT
+        point.x >= 0.0 && point.x < SCREEN_WIDTH && point.y >= 0.0 && point.y < SCREEN_HEIGHT
     }
 
     /// Checks t osee if a position is a valied exit
@@ -99,7 +98,7 @@ impl Map {
     pub fn index_to_point(&self, index: usize) -> Position {
         let x = index % SCREEN_WIDTH as usize;
         let y = index / SCREEN_WIDTH as usize;
-        Position::new(x as i32, y as i32)
+        Position::new(x as f32, y as f32)
     }
 }
 
