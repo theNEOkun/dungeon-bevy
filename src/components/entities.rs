@@ -2,10 +2,10 @@ use std::collections::HashSet;
 use super::*;
 
 #[derive(Component)]
-pub struct Player(pub u64);
+pub struct Player;
 
 #[derive(Component)]
-pub struct Enemy(pub u64);
+pub struct Enemy;
 
 /// Components to the entity
 #[derive(Component)]

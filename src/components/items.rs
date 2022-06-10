@@ -1,7 +1,7 @@
 use super::*;
 
 #[derive(Component)]
-pub struct Item(pub u64);
+pub struct Item;
 
 #[derive(Component)]
 pub struct AmuletOfYala;
