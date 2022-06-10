@@ -15,3 +15,36 @@ impl Position {
         Position::new(0, 0)
     }
 }
+
+impl std::ops::Add for Position {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Position {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y
+        }
+    }
+}
+
+impl std::ops::Sub for Position {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Position {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y
+        }
+    }
+}
+
+impl std::ops::Mul for Position {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Position {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y
+        }
+    }
+}
