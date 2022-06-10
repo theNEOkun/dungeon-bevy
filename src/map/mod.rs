@@ -1,4 +1,7 @@
+mod position;
+
 use crate::prelude::*;
+pub use position::*;
 
 const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
 
