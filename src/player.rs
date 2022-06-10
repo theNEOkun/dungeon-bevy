@@ -11,18 +11,19 @@ fn player_movement(
     mut player: Query<&mut Transform, With<Player>>,
 ) {
     for mut transform in player.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) {
-            transform.translation.x += 2.0;
-        }
-        if keyboard_input.pressed(KeyCode::Right) {
-            transform.translation.x += -2.0;
-        }
-        if keyboard_input.pressed(KeyCode::Up) {
-            transform.translation.y += -2.0;
-        }
-        if keyboard_input.pressed(KeyCode::Down) {
-            transform.translation.y += 2.0;
-        }
+        let delta = if keyboard_input.pressed(KeyCode::Left) {
+            Position::new(2.0, 0.0)
+        } else if keyboard_input.pressed(KeyCode::Right) {
+            Position::new(-2.0, 0.0)
+        } else if keyboard_input.pressed(KeyCode::Up) {
+            Position::new(0.0, -2.0)
+        } else if keyboard_input.pressed(KeyCode::Down) {
+            Position::new(0.0, 2.0)
+        } else {
+            Position::zero()
+        };
+        transform.translation.x += delta.x;
+        transform.translation.y += delta.y;
     }
 }
 
