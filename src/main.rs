@@ -1,4 +1,5 @@
 mod map;
+mod components;
 
 mod prelude {
     pub use bevy::prelude::*;
