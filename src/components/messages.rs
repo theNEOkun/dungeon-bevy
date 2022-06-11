@@ -12,6 +12,11 @@ pub struct WantsToAttack {
     pub victim: Entity,
 }
 
+pub struct CheckCollision {
+    pub entity: Entity,
+    pub destination: Position,
+}
+
 #[derive(Component)]
 pub struct ActivateItem {
     pub used_by: Entity,

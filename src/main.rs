@@ -12,6 +12,8 @@ mod prelude {
     pub const SCREEN_WIDTH: f32 = 80.0;
     pub const SCREEN_HEIGHT: f32 = 50.0;
 
+    pub const TIME_STEP: f32 = 1.0 / 60.0;
+
     pub use crate::components::*;
     pub use crate::player::*;
     pub use crate::mapbuilder::*;
@@ -20,6 +22,7 @@ mod prelude {
     pub use crate::GameOptions;
 }
 
+use bevy::utils::tracing::Event;
 use prelude::*;
 
 #[derive(Debug)]
@@ -38,7 +41,7 @@ pub enum Stages {
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_event::<CollisionEvent>()
+        .add_event::<CheckCollision>()
         .add_event::<WantsToMove>()
         .add_stage(Stages::Prepare, SystemStage::parallel())
         .add_stage(Stages::Start, SystemStage::parallel())

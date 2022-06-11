@@ -1,5 +1,5 @@
+
 use crate::prelude::*;
-use bevy::log::*;
 use crate::camera::*;
 
 #[derive(Clone, Copy)]
@@ -198,6 +198,7 @@ pub fn make_map(
             };
         }
     };
+    commands.insert_resource(map_builder.map);
     spawn_player(commands, map_builder.player_start)
 }
 

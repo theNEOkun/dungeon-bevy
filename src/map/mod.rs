@@ -35,7 +35,7 @@ pub fn map_idx(point: &PositionI) -> usize {
 ///
 /// point.y * WIDTH + point.x
 pub fn map_idx_f(point: &Position) -> usize {
-    ((point.y * SCREEN_WIDTH) + point.x) as usize
+    ((point.y as i32 * SCREEN_WIDTH as i32) + point.x as i32) as usize
 }
 
 /// Turns x and y into index
@@ -168,6 +168,7 @@ impl std::ops::Index<&Position> for Map {
 
     fn index(&self, point: &Position) -> &Self::Output {
         let idx = map_idx_f(point);
+        println!("{idx}");
         &self.tiles[idx]
     }
 }
