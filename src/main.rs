@@ -16,6 +16,7 @@ mod prelude {
     pub use crate::player::*;
     pub use crate::mapbuilder::*;
     pub use crate::map::*;
+    pub use crate::systems::*;
 }
 
 use prelude::*;
@@ -24,6 +25,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_event::<CollisionEvent>()
+        .add_plugin(Systems)
         .add_plugin(MapBuilder)
         .add_plugin(Player)
         .run();

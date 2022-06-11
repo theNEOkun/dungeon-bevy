@@ -33,6 +33,11 @@ impl Position {
     pub fn zero() -> Self {
         Self::new(0.0, 0.0)
     }
+
+    pub fn intersect(&self, other: &Self) -> bool {
+        other.x <= self.x && other.x > (self.x - 1.0) &&
+        other.x <= self.y && other.y > (self.x - 1.0)
+    }
 }
 
 impl std::ops::Add for Position {
@@ -108,6 +113,11 @@ impl PositionI {
 
     pub fn zero() -> Self {
         Self::new(0, 0)
+    }
+
+    pub fn intersect(&self, other: &Position) -> bool {
+        other.x <= self.x as f32 && other.x > (self.x - 1) as f32 &&
+        other.x <= self.y as f32 && other.y > (self.x - 1) as f32
     }
 }
 

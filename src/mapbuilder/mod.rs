@@ -165,11 +165,12 @@ fn make_map(mut commands: Commands) {
                         transform: Transform::from_xyz(x as f32, y as f32, 0.1),
                         ..default()
                     })
-                    .insert(pos),
+                    .insert(pos)
+                    .insert(Wall),
                 TileType::Floor => commands.spawn_bundle(
                     SpriteBundle {
                         sprite: Sprite {
-                            color: Color::YELLOW,
+                            color: Color::BLUE,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
@@ -180,7 +181,7 @@ fn make_map(mut commands: Commands) {
                 _ => commands.spawn_bundle(
                     SpriteBundle {
                         sprite: Sprite {
-                            color: Color::YELLOW,
+                            color: Color::RED,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },

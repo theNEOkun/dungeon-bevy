@@ -5,7 +5,7 @@ impl Plugin for Player {
     fn build(&self, app: &mut App) {
         app
             .add_startup_system(spawn_player)
-            .add_system(player_movement)
+            .add_system(player_movement.before(check_for_collisions))
             .add_system(camera_follows_player);
     }
 }
