@@ -168,7 +168,11 @@ pub fn make_map(
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        transform: Transform::from_xyz(x as f32, y as f32, 1.0),
+                        transform: Transform {
+                            translation: Vec3::new(x as f32, y as f32, 1.0),
+                            scale: Vec3::new(1.0, 1.0, 1.0),
+                            ..default()
+                        },
                         ..default()
                     })
                     .insert(pos)
@@ -180,7 +184,11 @@ pub fn make_map(
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        transform: Transform::from_xyz(x as f32, y as f32, 1.0),
+                        transform: Transform {
+                            translation: Vec3::new(x as f32, y as f32, 1.0),
+                            scale: Vec3::new(1.0, 1.0, 1.0),
+                            ..default()
+                        },
                         ..default()
                     })
                     .insert(pos),
@@ -191,7 +199,11 @@ pub fn make_map(
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        transform: Transform::from_xyz(x as f32, y as f32, 1.0),
+                        transform: Transform {
+                            translation: Vec3::new(x as f32, y as f32, 1.0),
+                            scale: Vec3::new(1.0, 1.0, 1.0),
+                            ..default()
+                        },
                         ..default()
                     })
                     .insert(pos),
@@ -218,7 +230,11 @@ pub fn spawn_player(
                 color: Color::rgb(255.0, 0.0, 255.0),
                 ..default()
             },
-            transform: Transform::from_xyz(player_start.x, player_start.y, 100.0),
+            transform: Transform {
+                translation: Vec3::new(player_start.x, player_start.y, 100.0),
+                scale: Vec3::new(1.0, 1.0, 1.0),
+                ..default()
+            },
             ..default()
         })
         .insert(player_start)

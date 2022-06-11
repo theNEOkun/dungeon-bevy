@@ -10,23 +10,31 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(
             SystemSet::new()
                 .with_system(player_movement)
-                .with_system(check_for_collisions.after(player_movement))
-                .with_system(make_move.after(check_for_collisions))
-                .with_system(camera_follows_player.after(make_move)),
+                .with_system(check_collision)
+                .with_system(camera_follows_player.after(check_collision)),
         );
     }
 }
 
-pub fn make_move(
+pub fn check_collision(
     mut player: Query<(Entity, &mut Position, &mut Transform), With<Collider>>,
+    walls: Query<(Entity, &Position, &Transform), (With<Wall>, Without<Collider>)>,
     mut event_reader: EventReader<WantsToMove>,
+    map: Res<Map>,
 ) {
-    for (entity, mut position, mut transform) in player.iter_mut() {
+    for (_, mut position, mut transform) in player.iter_mut() {
+        for (_, _, wall_trans) in walls.iter() {
             for each in event_reader.iter() {
+                let collision = map.can_enter_tile_f(&each.destination);
+                if collision {
                     position.x = each.destination.x;
                     position.y = each.destination.y;
                     transform.translation.x = position.x;
                     transform.translation.y = position.y;
+                } else {
+                    println!("{position:?}");
+                }
+            }
         }
     }
 }
@@ -34,7 +42,7 @@ pub fn make_move(
 pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut player: Query<(Entity, &mut Transform, &mut Position), With<Player>>,
-    mut event_writer: EventWriter<CheckCollision>,
+    mut event_writer: EventWriter<WantsToMove>,
 ) {
     for (entity, _, position) in player.iter_mut() {
         let mut delta = (0.0, 0.0);
@@ -52,7 +60,7 @@ pub fn player_movement(
         }
         let destination = Position::new(position.x + delta.0, position.y + delta.1);
         if delta != (0.0, 0.0) {
-            event_writer.send(CheckCollision {
+            event_writer.send(WantsToMove {
                 entity,
                 destination,
             });

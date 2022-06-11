@@ -8,24 +8,23 @@ pub fn check_for_collisions(
     mut pre_move: EventReader<CheckCollision>,
     mut post_move: EventWriter<WantsToMove>,
 ) {
-    for (entity, position, player) in collider_query.iter() {
-        for (_, _, wall) in wall_positions.iter() {
-            for each in pre_move.iter() {
-                let dest = Transform::from_xyz(each.destination.x, each.destination.y, 1.0);
+    for each in pre_move.iter() {
+        for (_, _, player) in collider_query.iter() {
+            for (_, _, wall) in wall_positions.iter() {
                 let collision = collide(
                     wall.translation,
                     wall.scale.truncate(),
-                    dest.translation,
-                    dest.scale.truncate(),
+                    player.translation,
+                    player.scale.truncate(),
                 );
                 if let Some(_) = collision {
                     post_move.send(WantsToMove {
-                        entity,
-                        destination: *position,
+                        entity: each.entity,
+                        destination: Position::zero(),
                     })
                 } else {
                     post_move.send(WantsToMove {
-                        entity,
+                        entity: each.entity,
                         destination: each.destination,
                     })
                 }
