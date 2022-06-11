@@ -23,3 +23,5 @@ pub struct CollisionEvent{
     pub mover: Entity,
     pub collider: Entity,
 }
+
+pub struct SpawnPlayer;

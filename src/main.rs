@@ -17,16 +17,34 @@ mod prelude {
     pub use crate::mapbuilder::*;
     pub use crate::map::*;
     pub use crate::systems::*;
+    pub use crate::GameOptions;
 }
 
 use prelude::*;
+
+#[derive(Debug)]
+pub struct GameOptions {
+    player_start: Option<Position>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(StageLabel)]
+pub enum Stages {
+    Prepare,
+    Start,
+    Cleanup
+}
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_event::<CollisionEvent>()
-        .add_plugin(Systems)
+        .add_event::<SpawnPlayer>()
+        .add_stage(Stages::Prepare, SystemStage::parallel())
+        .add_stage(Stages::Start, SystemStage::parallel())
+        .add_stage(Stages::Cleanup, SystemStage::parallel())
         .add_plugin(MapBuilder)
-        .add_plugin(Player)
+        .add_plugin(Systems)
+        .add_plugin(PlayerPlugin)
         .run();
 }

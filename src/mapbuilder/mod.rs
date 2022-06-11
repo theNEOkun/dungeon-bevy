@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use bevy::log::*;
+use crate::camera::*;
 
 #[derive(Clone, Copy)]
 pub struct Rect {
@@ -56,6 +57,7 @@ const NUM_ROOMS: usize = 20;
 pub struct MapArch {
     pub map: Map,
     pub rooms: Vec<Rect>,
+    pub player_start: Position,
 }
 
 impl MapArch {
@@ -63,11 +65,13 @@ impl MapArch {
         let mut arch = MapArch {
             map: Map::new(),
             rooms: Vec::new(),
+            player_start: Position::zero(),
         };
 
         arch.fill(TileType::Wall);
         arch.build_random_rooms(rng);
         arch.build_corridors(rng);
+        arch.player_start = Position::new_from_position(arch.rooms[0].center());
 
         arch
     }
@@ -149,7 +153,9 @@ impl MapArch {
     }
 }
 
-fn make_map(mut commands: Commands) {
+pub fn make_map(
+    mut commands: Commands,
+    ) {
     let map_builder = MapArch::new(&mut thread_rng());
     for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
         for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
@@ -162,7 +168,7 @@ fn make_map(mut commands: Commands) {
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                        transform: Transform::from_xyz(x as f32, y as f32, 1.0),
                         ..default()
                     })
                     .insert(pos)
@@ -174,7 +180,7 @@ fn make_map(mut commands: Commands) {
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                        transform: Transform::from_xyz(x as f32, y as f32, 1.0),
                         ..default()
                     })
                     .insert(pos),
@@ -185,14 +191,39 @@ fn make_map(mut commands: Commands) {
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                        transform: Transform::from_xyz(x as f32, y as f32, 1.0),
                         ..default()
                     })
                     .insert(pos),
             };
         }
-    }
-    commands.insert_resource(map_builder.map);
+    };
+    spawn_player(commands, map_builder.player_start)
+}
+
+pub fn spawn_player(
+    mut commands: Commands,
+    player_start: Position,
+    ) {
+    //let player_start = if let Some(start) = options.player_start {
+    //    start
+    //} else {
+    //    Position::zero()
+    //};
+    commands
+        .spawn_bundle(
+            SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(255.0, 0.0, 255.0),
+                ..default()
+            },
+            transform: Transform::from_xyz(player_start.x, player_start.y, 100.0),
+            ..default()
+        })
+        .insert(player_start)
+        .insert(Player)
+        .insert(Collider);
+    commands.spawn_bundle(new_camera_2d());
 }
 
 pub struct MapBuilder;

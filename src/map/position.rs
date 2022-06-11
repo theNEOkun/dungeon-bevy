@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Component, PartialEq)]
+#[derive(Component, PartialEq, Clone, Copy)]
 pub struct Position {
     pub x: f32,
     pub y: f32,
@@ -27,6 +27,13 @@ impl Position {
         Self {
             x,
             y
+        }
+    }
+
+    pub fn new_from_position(pos: PositionI) -> Self {
+        Self {
+            x: pos.x as f32,
+            y: pos.y as f32
         }
     }
 
@@ -90,7 +97,7 @@ impl std::fmt::Debug for Position {
     }
 }
 
-#[derive(Component, PartialEq)]
+#[derive(Component, PartialEq, Clone, Copy)]
 pub struct PositionI {
     pub x: i32,
     pub y: i32,

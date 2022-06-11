@@ -1,16 +1,16 @@
-use super::camera::new_camera_2d;
 use crate::prelude::*;
 
-impl Plugin for Player {
+pub struct PlayerPlugin;
+
+impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_startup_system(spawn_player)
             .add_system(player_movement.before(check_for_collisions))
-            .add_system(camera_follows_player);
+            .add_system(camera_follows_player.after(player_movement));
     }
 }
 
-fn player_movement(
+pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut player: Query<(Entity, &mut Transform, &mut Position), With<Player>>,
     mut collision: EventReader<CollisionEvent>,
@@ -50,28 +50,4 @@ pub fn camera_follows_player(
             camera.translation.y = player.y;
         }
     }
-}
-
-fn spawn_player(mut commands: Commands) {
-    commands
-        .spawn_bundle(
-            SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(0.7, 0.7, 0.7),
-                ..default()
-            },
-            transform: Transform::from_xyz(1.0, 1.0, 10.0),
-            ..default()
-        })
-        .insert(Position::zero())
-        .insert(Player)
-        .insert(MapLevel(0))
-        .insert(Health {
-            current: 10,
-            max: 10,
-        })
-        .insert(Collider)
-        .insert(FieldOfView::new(8))
-        .insert(Damage(1));
-    commands.spawn_bundle(new_camera_2d());
 }
