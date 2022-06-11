@@ -21,15 +21,22 @@ pub struct Map {
 /// Moves from a point into an index
 ///
 /// point.y * WIDTH + point.x
-pub fn map_idx(point: &Position) -> usize {
+pub fn map_idx(point: &PositionI) -> usize {
+    ((point.y * SCREEN_WIDTH as i32) + point.x) as usize
+}
+
+/// Moves from a point into an index
+///
+/// point.y * WIDTH + point.x
+pub fn map_idx_f(point: &Position) -> usize {
     ((point.y * SCREEN_WIDTH) + point.x) as usize
 }
 
 /// Turns x and y into index
 ///
 /// applies map_idx on a new point
-pub fn map_idx_int(x: f32, y: f32) -> usize {
-    map_idx(&Position::new(x, y))
+pub fn map_idx_int(x: i32, y: i32) -> usize {
+    map_idx(&PositionI::new(x, y))
 }
 
 impl Map {
@@ -45,8 +52,20 @@ impl Map {
     ///
     /// @param point is the point to check
     /// @returns None if it is not, else Some(point)
-    pub fn try_idx(&self, point: Position) -> Option<Position> {
+    pub fn try_idx(&self, point: PositionI) -> Option<PositionI> {
         if !self.in_bounds(&point) {
+            None
+        } else {
+            Some(point)
+        }
+    }
+
+    /// Tries to see if a point is inside the map
+    ///
+    /// @param point is the point to check
+    /// @returns None if it is not, else Some(point)
+    pub fn try_idx_f(&self, point: Position) -> Option<Position> {
+        if !self.in_bounds_f(&point) {
             None
         } else {
             Some(point)
@@ -56,8 +75,18 @@ impl Map {
     /// Checks if a person can enter that point
     ///
     /// @returns true if it is enterable
-    pub fn can_enter_tile(&self, point: &Position) -> bool {
+    pub fn can_enter_tile(&self, point: &PositionI) -> bool {
         self.in_bounds(point) && (
+            self[point] == TileType::Floor ||
+            self[point] == TileType::Exit
+        )
+    }
+
+    /// Checks if a person can enter that point
+    ///
+    /// @returns true if it is enterable
+    pub fn can_enter_tile_f(&self, point: &Position) -> bool {
+        self.in_bounds_f(point) && (
             self[point] == TileType::Floor ||
             self[point] == TileType::Exit
         )
@@ -68,8 +97,17 @@ impl Map {
     ///
     /// @param point is the point to check 
     /// @returns true if it is
-    pub fn in_bounds(&self, point: &Position) -> bool {
-        point.x >= 0.0 && point.x < SCREEN_WIDTH && point.y >= 0.0 && point.y < SCREEN_HEIGHT
+    pub fn in_bounds(&self, point: &PositionI) -> bool {
+        point.x >= 0 && point.x < SCREEN_WIDTH as i32 && point.y >= 0 && point.y < SCREEN_HEIGHT as i32
+    }
+
+    /// Checks to see if a point is in bounds
+    /// WIDTH > x >= 0 and HEIGHT > y >= 0
+    ///
+    /// @param point is the point to check 
+    /// @returns true if it is
+    pub fn in_bounds_f(&self, point: &Position) -> bool {
+        point.x >= 0.0 && point.x < SCREEN_WIDTH  && point.y >= 0.0 && point.y < SCREEN_HEIGHT
     }
 
     /// Checks t osee if a position is a valied exit
@@ -77,7 +115,7 @@ impl Map {
     /// @param loc is the current position
     /// @param delta is the position to walk to
     /// @return Either Some(index) else None
-    fn valid_exit(&self, loc: Position, delta: Position) -> Option<usize> {
+    fn valid_exit(&self, loc: PositionI, delta: PositionI) -> Option<usize> {
         let destination = loc + delta;
         if self.in_bounds(&destination) {
             if self.can_enter_tile(&destination) {
@@ -91,31 +129,46 @@ impl Map {
         }
     }
 
-    pub fn point_to_index(&self, pos: &Position) -> usize {
-        ((pos.y * SCREEN_WIDTH) + pos.x) as usize
+    pub fn point_to_index(&self, pos: &PositionI) -> usize {
+        ((pos.y * SCREEN_WIDTH as i32) + pos.x) as usize
     }
 
-    pub fn index_to_point(&self, index: usize) -> Position {
+    pub fn index_to_point(&self, index: usize) -> PositionI {
         let x = index % SCREEN_WIDTH as usize;
         let y = index / SCREEN_WIDTH as usize;
-        Position::new(x as f32, y as f32)
+        PositionI::new(x as i32, y as i32)
     }
 }
 
 // Indexing below
 
+impl std::ops::Index<&PositionI> for Map {
+    type Output = TileType;
+
+    fn index(&self, point: &PositionI) -> &Self::Output {
+        let idx = map_idx(point);
+        &self.tiles[idx]
+    }
+}
+
+impl std::ops::IndexMut<&PositionI> for Map {
+    fn index_mut(&mut self, point: &PositionI) -> &mut Self::Output {
+        let idx = map_idx(point);
+        &mut self.tiles[idx]
+    }
+}
 impl std::ops::Index<&Position> for Map {
     type Output = TileType;
 
     fn index(&self, point: &Position) -> &Self::Output {
-        let idx = map_idx(point);
+        let idx = map_idx_f(point);
         &self.tiles[idx]
     }
 }
 
 impl std::ops::IndexMut<&Position> for Map {
     fn index_mut(&mut self, point: &Position) -> &mut Self::Output {
-        let idx = map_idx(point);
+        let idx = map_idx_f(point);
         &mut self.tiles[idx]
     }
 }
