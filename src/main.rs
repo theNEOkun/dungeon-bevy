@@ -1,6 +1,7 @@
 mod map;
 mod components;
 mod player;
+mod systems;
 
 mod prelude {
     pub use bevy::prelude::*;
