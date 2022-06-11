@@ -1,32 +1,54 @@
+use super::camera::new_camera_2d;
 use crate::prelude::*;
 
 impl Plugin for Player {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn).add_system(player_movement);
+        app
+            .add_startup_system(spawn_player)
+            .add_system(player_movement)
+            .add_system(camera_follows_player);
     }
 }
 
 fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player: Query<&mut Transform, With<Player>>,
+    mut player: Query<(&mut Transform, &mut Position), With<Player>>,
 ) {
-    for mut transform in player.iter_mut() {
+    for (mut transform, mut position) in player.iter_mut() {
+        let mut delta = (0.0, 0.0);
         if keyboard_input.pressed(KeyCode::Left) {
-            transform.translation.x += 2.0;
+            delta.0 = 2.0;
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            transform.translation.x += -2.0;
+            delta.0 = -2.0;
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            transform.translation.y += -2.0;
+            delta.1 = -2.0;
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            transform.translation.y += 2.0;
+            delta.1 = 2.0;
+        }
+
+        transform.translation.x = delta.0;
+        transform.translation.y = delta.1;
+        position.x = delta.0;
+        position.y = delta.1;
+    }
+}
+
+pub fn camera_follows_player(
+    mut cameras: Query<&mut Transform, With<Camera>>,
+    players: Query<&Position, With<Player>>
+) {
+    for player in players.iter() {
+        for mut camera in cameras.iter_mut() {
+            camera.translation.x = player.x;
+            camera.translation.y = player.y;
         }
     }
 }
 
-fn spawn(mut commands: Commands) {
+fn spawn_player(mut commands: Commands) {
     commands
         .spawn_bundle(
             SpriteBundle {
@@ -35,11 +57,12 @@ fn spawn(mut commands: Commands) {
                 ..default()
             },
             transform: Transform {
-                scale: Vec3::new(10.0, 10.0, 10.0),
+                scale: Vec3::new(3.0, 3.0, 1.0),
                 ..default()
             },
             ..default()
         })
+        .insert(Position::zero())
         .insert(Player)
         .insert(MapLevel(0))
         .insert(Health {
@@ -48,4 +71,5 @@ fn spawn(mut commands: Commands) {
         })
         .insert(FieldOfView::new(8))
         .insert(Damage(1));
+    commands.spawn_bundle(new_camera_2d());
 }

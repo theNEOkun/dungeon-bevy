@@ -14,6 +14,13 @@ impl Position {
         }
     }
 
+    pub fn new_from_tuple((x, y): (f32, f32)) -> Self {
+        Position {
+            x,
+            y
+        }
+    }
+
     pub fn zero() -> Self {
         Position::new(0.0, 0.0)
     }
@@ -26,6 +33,17 @@ impl std::ops::Add for Position {
         Position {
             x: self.x + rhs.x,
             y: self.y + rhs.y
+        }
+    }
+}
+
+impl std::ops::Add<(f32, f32)> for Position {
+    type Output = Self;
+
+    fn add(self, rhs: (f32, f32)) -> Self::Output {
+        Position {
+            x: self.x + rhs.0,
+            y: self.y + rhs.1
         }
     }
 }

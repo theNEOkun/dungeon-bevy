@@ -2,6 +2,7 @@ mod map;
 mod components;
 mod player;
 mod systems;
+mod camera;
 
 mod prelude {
     pub use bevy::prelude::*;
