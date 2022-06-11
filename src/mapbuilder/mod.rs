@@ -1,9 +1,8 @@
 use crate::prelude::*;
-
-pub struct MapBuilder;
+use bevy::log::*;
 
 #[derive(Clone, Copy)]
-struct Rect {
+pub struct Rect {
     x1: i32,
     y1: i32,
     x2: i32,
@@ -11,18 +10,8 @@ struct Rect {
 }
 
 impl Rect {
-    pub fn with_size(
-        x1: i32,
-        y1: i32,
-        x2: i32,
-        y2: i32
-    ) -> Self {
-        Self {
-            x1,
-            y1,
-            x2,
-            y2
-        }
+    pub fn with_size(x1: i32, y1: i32, width: i32, height: i32) -> Self {
+        Self { x1, y1, x2: x1 + width, y2: y1 + height }
     }
 
     /// Used to find the center of a Rect
@@ -35,15 +24,21 @@ impl Rect {
         self.x1 <= other.x2 && self.x2 >= other.x1 && self.y1 <= other.y2 && self.y2 >= other.y1
     }
 
-    pub fn for_each<F>(&self, mut f: F) 
-        where
-            F: FnMut(PositionI),
+    pub fn for_each<F>(&self, mut f: F)
+    where
+        F: FnMut(PositionI),
     {
         for y in self.y1..=self.y2 {
             for x in self.x1..=self.x2 {
                 f(PositionI::new(x, y))
             }
         }
+    }
+}
+
+impl std::fmt::Debug for Rect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(x1: {}, y1: {}), (x1: {}, y2: {})", self.x1, self.y1, self.x2, self.y2)
     }
 }
 
@@ -55,6 +50,19 @@ pub struct MapArch {
 }
 
 impl MapArch {
+    pub fn new(rng: &mut ThreadRng) -> Self {
+        let mut arch = MapArch {
+            map: Map::new(),
+            rooms: Vec::new(),
+        };
+
+        arch.fill(TileType::Wall);
+        arch.build_random_rooms(rng);
+        arch.build_corridors(rng);
+
+        arch
+    }
+
     /// Fills the map with a certain tile
     /// Mostly used with the wall-tile
     fn fill(&mut self, tile: TileType) {
@@ -78,7 +86,8 @@ impl MapArch {
             }
             if !overlap {
                 room.for_each(|p| {
-                    if p.x > 0 && p.x < SCREEN_WIDTH as i32 && p.y > 0 && p.y < SCREEN_HEIGHT as i32 {
+                    if p.x > 0 && p.x < SCREEN_WIDTH as i32 && p.y > 0 && p.y < SCREEN_HEIGHT as i32
+                    {
                         self.map[&p] = TileType::Floor;
                     }
                 });
@@ -131,24 +140,36 @@ impl MapArch {
     }
 }
 
+pub struct MapBuilder;
+
 impl Plugin for MapBuilder {
     fn build(&self, app: &mut App) {
-        app
-            .add_startup_system(spawn_floor);
+        let map_builder = MapArch::new(&mut thread_rng());
+        app.add_startup_system(move |mut commands: Commands| {
+            for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
+                for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
+                    let pos = Position::new_from_usize(x, y);
+                    commands
+                        .spawn_bundle(SpriteBundle {
+                            sprite: Sprite {
+                                color: match map_builder.map[&pos] {
+                                    TileType::Wall => {
+                                        Color::YELLOW
+                                    },
+                                    TileType::Floor => {
+                                        Color::BLUE
+                                    },
+                                    _ => Color::RED,
+                                },
+                                custom_size: Some(Vec2::new(1.0, 1.0)),
+                                ..default()
+                            },
+                            transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                            ..default()
+                        })
+                        .insert(pos);
+                }
+            }
+        });
     }
-}
-
-fn spawn_floor(
-    mut commands: Commands
-) {
-    commands.spawn_bundle(
-        SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(0.7, 0.7, 0.7),
-                custom_size: Some(Vec2::new(10.0, 1.0)),
-                ..default()
-            },
-            ..default()
-        }
-    );
 }

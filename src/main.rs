@@ -23,7 +23,7 @@ use prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(Player)
         .add_plugin(MapBuilder)
+        .add_plugin(Player)
         .run();
 }

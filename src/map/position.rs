@@ -21,6 +21,15 @@ impl Position {
         }
     }
 
+    pub fn new_from_usize(x: usize, y: usize) -> Self {
+        let x = x as f32;
+        let y = y as f32;
+        Self {
+            x,
+            y
+        }
+    }
+
     pub fn zero() -> Self {
         Self::new(0.0, 0.0)
     }
@@ -67,6 +76,12 @@ impl std::ops::Mul for Position {
             x: self.x * rhs.x,
             y: self.y * rhs.y
         }
+    }
+}
+
+impl std::fmt::Debug for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(x: {}, y: {})", self.x, self.y)
     }
 }
 
@@ -137,5 +152,11 @@ impl std::ops::Mul for PositionI {
             x: self.x * rhs.x,
             y: self.y * rhs.y
         }
+    }
+}
+
+impl std::fmt::Debug for PositionI {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(x: {}, y: {})", self.x, self.y)
     }
 }

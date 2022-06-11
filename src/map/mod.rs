@@ -12,6 +12,12 @@ pub enum TileType {
     Exit,
 }
 
+impl std::fmt::Debug for TileType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 /// Holds the Map
 pub struct Map {
     pub tiles: Vec<TileType>,
@@ -184,5 +190,11 @@ impl std::ops::Index<usize> for Map {
 impl std::ops::IndexMut<usize> for Map {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.tiles[index]
+    }
+}
+
+impl std::fmt::Debug for Map {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.tiles)
     }
 }

@@ -56,10 +56,7 @@ fn spawn_player(mut commands: Commands) {
                 color: Color::rgb(0.7, 0.7, 0.7),
                 ..default()
             },
-            transform: Transform {
-                scale: Vec3::new(1.0, 1.0, 0.1),
-                ..default()
-            },
+            transform: Transform::from_xyz(1.0, 1.0, 10.0),
             ..default()
         })
         .insert(Position::zero())
