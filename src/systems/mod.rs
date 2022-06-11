@@ -1,3 +1,4 @@
+mod collisions;
 
 use crate::prelude::*;
 
@@ -12,6 +13,7 @@ impl Plugin for Systems {
 
 pub fn build_input_scheduler() -> SystemSet {
     SystemSet::new()
+        .with_system(collisions::check_for_collisions)
 }
 
 pub fn build_player_scheduler() -> SystemSet {

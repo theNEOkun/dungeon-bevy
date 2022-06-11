@@ -154,29 +154,41 @@ fn make_map(mut commands: Commands) {
     for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
         for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
             let pos = Position::new_from_usize(x, y);
-            commands
-                .spawn_bundle(SpriteBundle {
-                    sprite: match map_builder.map[&pos] {
-                        TileType::Wall => Sprite {
+            match map_builder.map[&pos] {
+                TileType::Wall => commands
+                    .spawn_bundle(SpriteBundle {
+                        sprite: Sprite {
                             color: Color::YELLOW,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        TileType::Floor => Sprite {
-                            color: Color::BLUE,
+                        transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                        ..default()
+                    })
+                    .insert(pos),
+                TileType::Floor => commands
+                    .spawn_bundle(SpriteBundle {
+                        sprite: Sprite {
+                            color: Color::YELLOW,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                        _ => Sprite {
-                            color: Color::RED,
+                        transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                        ..default()
+                    })
+                    .insert(pos),
+                _ => commands
+                    .spawn_bundle(SpriteBundle {
+                        sprite: Sprite {
+                            color: Color::YELLOW,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
-                    },
-                    transform: Transform::from_xyz(x as f32, y as f32, 0.1),
-                    ..default()
-                })
-                .insert(pos);
+                        transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                        ..default()
+                    })
+                    .insert(pos),
+            };
         }
     }
     commands.insert_resource(map_builder.map);

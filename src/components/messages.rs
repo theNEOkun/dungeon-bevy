@@ -17,3 +17,6 @@ pub struct ActivateItem {
     pub used_by: Entity,
     pub item: Entity,
 }
+
+#[derive(Component)]
+pub struct CollisionEvent;

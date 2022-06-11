@@ -11,3 +11,9 @@ pub use messages::*;
 /// Rendering
 #[derive(Clone, Debug, PartialEq)]
 pub struct Name(pub String);
+
+#[derive(Component)]
+pub struct Collider;
+
+#[derive(Component)]
+pub struct Wall;
