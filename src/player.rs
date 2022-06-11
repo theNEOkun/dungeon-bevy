@@ -17,22 +17,22 @@ fn player_movement(
     for (mut transform, mut position) in player.iter_mut() {
         let mut delta = (0.0, 0.0);
         if keyboard_input.pressed(KeyCode::Left) {
-            delta.0 = 2.0;
+            delta.0 = -0.1;
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            delta.0 = -2.0;
+            delta.0 = 0.1;
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            delta.1 = -2.0;
+            delta.1 = 0.1;
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            delta.1 = 2.0;
+            delta.1 = -0.1;
         }
 
-        transform.translation.x = delta.0;
-        transform.translation.y = delta.1;
-        position.x = delta.0;
-        position.y = delta.1;
+        transform.translation.x += delta.0;
+        transform.translation.y += delta.1;
+        position.x += delta.0;
+        position.y += delta.1;
     }
 }
 
@@ -57,7 +57,7 @@ fn spawn_player(mut commands: Commands) {
                 ..default()
             },
             transform: Transform {
-                scale: Vec3::new(3.0, 3.0, 1.0),
+                scale: Vec3::new(1.0, 1.0, 0.1),
                 ..default()
             },
             ..default()

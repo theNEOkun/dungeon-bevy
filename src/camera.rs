@@ -15,6 +15,6 @@ pub fn new_camera_2d() -> OrthographicCameraBundle<Camera2d> {
     scaling_mode: ScalingMode::FixedHorizontal,
     ..Default::default()
   };
-  camera.transform.scale = Vec3::new(10., 10., 1.);
+  camera.transform.scale = Vec3::new(100., 100., 1.);
   return camera;
 }
