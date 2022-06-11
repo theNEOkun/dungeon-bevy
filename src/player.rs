@@ -12,9 +12,13 @@ impl Plugin for Player {
 
 fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player: Query<(&mut Transform, &mut Position), With<Player>>,
+    mut player: Query<(Entity, &mut Transform, &mut Position), With<Player>>,
+    mut collision: EventReader<CollisionEvent>,
 ) {
-    for (mut transform, mut position) in player.iter_mut() {
+    for (entity, mut transform, mut position) in player.iter_mut() {
+        if collision.iter().any(|x| x.mover == entity) {
+            return;
+        }
         let mut delta = (0.0, 0.0);
         if keyboard_input.pressed(KeyCode::Left) {
             delta.0 = -0.1;
@@ -66,6 +70,7 @@ fn spawn_player(mut commands: Commands) {
             current: 10,
             max: 10,
         })
+        .insert(Collider)
         .insert(FieldOfView::new(8))
         .insert(Damage(1));
     commands.spawn_bundle(new_camera_2d());

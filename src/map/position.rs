@@ -35,8 +35,8 @@ impl Position {
     }
 
     pub fn intersect(&self, other: &Self) -> bool {
-        other.x <= self.x && other.x > (self.x - 1.0) &&
-        other.x <= self.y && other.y > (self.x - 1.0)
+        self.x <= other.x && self.x > (other.x - 1.0) &&
+        self.y <= other.y && self.y > (other.y - 1.0)
     }
 }
 

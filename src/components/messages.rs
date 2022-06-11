@@ -19,4 +19,7 @@ pub struct ActivateItem {
 }
 
 #[derive(Component)]
-pub struct CollisionEvent;
+pub struct CollisionEvent{
+    pub mover: Entity,
+    pub collider: Entity,
+}
