@@ -155,8 +155,8 @@ fn make_map(mut commands: Commands) {
         for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
             let pos = Position::new_from_usize(x, y);
             match map_builder.map[&pos] {
-                TileType::Wall => commands
-                    .spawn_bundle(SpriteBundle {
+                TileType::Wall => commands.spawn_bundle(
+                    SpriteBundle {
                         sprite: Sprite {
                             color: Color::YELLOW,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
@@ -166,8 +166,8 @@ fn make_map(mut commands: Commands) {
                         ..default()
                     })
                     .insert(pos),
-                TileType::Floor => commands
-                    .spawn_bundle(SpriteBundle {
+                TileType::Floor => commands.spawn_bundle(
+                    SpriteBundle {
                         sprite: Sprite {
                             color: Color::YELLOW,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
@@ -177,8 +177,8 @@ fn make_map(mut commands: Commands) {
                         ..default()
                     })
                     .insert(pos),
-                _ => commands
-                    .spawn_bundle(SpriteBundle {
+                _ => commands.spawn_bundle(
+                    SpriteBundle {
                         sprite: Sprite {
                             color: Color::YELLOW,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
