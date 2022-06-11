@@ -11,7 +11,12 @@ pub struct Rect {
 
 impl Rect {
     pub fn with_size(x1: i32, y1: i32, width: i32, height: i32) -> Self {
-        Self { x1, y1, x2: x1 + width, y2: y1 + height }
+        Self {
+            x1,
+            y1,
+            x2: x1 + width,
+            y2: y1 + height,
+        }
     }
 
     /// Used to find the center of a Rect
@@ -38,7 +43,11 @@ impl Rect {
 
 impl std::fmt::Debug for Rect {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(x1: {}, y1: {}), (x1: {}, y2: {})", self.x1, self.y1, self.x2, self.y2)
+        write!(
+            f,
+            "(x1: {}, y1: {}), (x1: {}, y2: {})",
+            self.x1, self.y1, self.x2, self.y2
+        )
     }
 }
 
@@ -140,36 +149,43 @@ impl MapArch {
     }
 }
 
+fn make_map(mut commands: Commands) {
+    let map_builder = MapArch::new(&mut thread_rng());
+    for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
+        for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
+            let pos = Position::new_from_usize(x, y);
+            commands
+                .spawn_bundle(SpriteBundle {
+                    sprite: match map_builder.map[&pos] {
+                        TileType::Wall => Sprite {
+                            color: Color::YELLOW,
+                            custom_size: Some(Vec2::new(1.0, 1.0)),
+                            ..default()
+                        },
+                        TileType::Floor => Sprite {
+                            color: Color::BLUE,
+                            custom_size: Some(Vec2::new(1.0, 1.0)),
+                            ..default()
+                        },
+                        _ => Sprite {
+                            color: Color::RED,
+                            custom_size: Some(Vec2::new(1.0, 1.0)),
+                            ..default()
+                        },
+                    },
+                    transform: Transform::from_xyz(x as f32, y as f32, 0.1),
+                    ..default()
+                })
+                .insert(pos);
+        }
+    }
+    commands.insert_resource(map_builder.map);
+}
+
 pub struct MapBuilder;
 
 impl Plugin for MapBuilder {
     fn build(&self, app: &mut App) {
-        let map_builder = MapArch::new(&mut thread_rng());
-        app.add_startup_system(move |mut commands: Commands| {
-            for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
-                for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
-                    let pos = Position::new_from_usize(x, y);
-                    commands
-                        .spawn_bundle(SpriteBundle {
-                            sprite: Sprite {
-                                color: match map_builder.map[&pos] {
-                                    TileType::Wall => {
-                                        Color::YELLOW
-                                    },
-                                    TileType::Floor => {
-                                        Color::BLUE
-                                    },
-                                    _ => Color::RED,
-                                },
-                                custom_size: Some(Vec2::new(1.0, 1.0)),
-                                ..default()
-                            },
-                            transform: Transform::from_xyz(x as f32, y as f32, 0.1),
-                            ..default()
-                        })
-                        .insert(pos);
-                }
-            }
-        });
+        app.add_startup_system(make_map);
     }
 }
