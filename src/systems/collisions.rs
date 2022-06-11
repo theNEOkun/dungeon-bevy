@@ -7,8 +7,8 @@ pub fn check_for_collisions(
     wall_positions: Query<(Entity, &Position, &Transform), With<Wall>>,
     mut collision_events: EventWriter<CollisionEvent>
 ) {
-    for (mover, _, player) in collider_query.iter() {
-        for (collider, _, wall) in wall_positions.iter() {
+    for (mover, mover_position, player) in collider_query.iter() {
+        for (collider, collider_position, wall) in wall_positions.iter() {
             let collision = collide(
                 wall.translation,
                 wall.scale.truncate(),
@@ -18,7 +18,8 @@ pub fn check_for_collisions(
             if let Some(_) = collision {
                 collision_events.send(CollisionEvent{
                     mover,
-                    collider
+                    collider,
+                    fix: (0.0, 0.0)
                 });
             }
         }

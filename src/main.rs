@@ -39,7 +39,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_event::<CollisionEvent>()
-        .add_event::<SpawnPlayer>()
+        .add_event::<WantsToMove>()
         .add_stage(Stages::Prepare, SystemStage::parallel())
         .add_stage(Stages::Start, SystemStage::parallel())
         .add_stage(Stages::Cleanup, SystemStage::parallel())

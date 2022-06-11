@@ -22,6 +22,5 @@ pub struct ActivateItem {
 pub struct CollisionEvent{
     pub mover: Entity,
     pub collider: Entity,
+    pub fix: (f32, f32),
 }
-
-pub struct SpawnPlayer;
