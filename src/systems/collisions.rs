@@ -21,11 +21,13 @@ pub fn check_for_collisions(
                     post_move.send(WantsToMove {
                         entity: each.entity,
                         destination: Position::zero(),
+                        direction: AnimDirection::Down
                     })
                 } else {
                     post_move.send(WantsToMove {
                         entity: each.entity,
                         destination: each.destination,
+                        direction: AnimDirection::Down
                     })
                 }
             }

@@ -71,27 +71,15 @@ pub fn check_collision(
     for (_, mut position, mut transform, mut timer, mut sprite) in player.iter_mut() {
         for (_, _, _) in walls.iter() {
             for each in event_reader.iter() {
-                let destination = Position::new(position.x + each.destination.x, position.y + each.destination.y);
+                let destination = Position::new(
+                    position.x + each.destination.x,
+                    position.y + each.destination.y,
+                );
                 let can_move = map.can_enter_tile_f(&destination);
                 if can_move {
                     timer.tick(time.delta());
                     if timer.just_finished() {
-                        let anim_dir = if each.destination.x != 0.0 {
-                            if each.destination.x > 0.0 {
-                                16*1
-                            } else {
-                                16*3
-                            }
-                        } else if each.destination.y != 0.0 {
-                            if each.destination.y > 0.0 {
-                                16*2
-                            } else {
-                                16*0
-                            }
-                        } else {
-                            0
-                        };
-                        sprite.index = ((sprite.index + 1) % 4) + anim_dir;
+                        sprite.index = ((sprite.index + 1) % 4) + each.direction as usize;
                         position.x = destination.x;
                         position.y = destination.y;
                         transform.translation.x = position.x;
@@ -123,10 +111,26 @@ pub fn player_movement(
             delta.1 = -1.0;
         }
         let destination = Position::new(delta.0, delta.1);
+        let anim_dir = if destination.x != 0.0 {
+            if destination.x < 0.0 {
+                AnimDirection::Right
+            } else {
+                AnimDirection::Left
+            }
+        } else if destination.y != 0.0 {
+            if destination.y < 0.0 {
+                AnimDirection::Down
+            } else {
+                AnimDirection::Up
+            }
+        } else {
+            AnimDirection::Down
+        };
         if delta != (0.0, 0.0) {
             event_writer.send(WantsToMove {
                 entity,
                 destination,
+                direction: anim_dir
             });
         }
     }
