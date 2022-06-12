@@ -1,4 +1,4 @@
-use bevy::core::FixedTimestep;
+use bevy::{core::FixedTimestep, render::render_resource::Texture};
 
 use crate::prelude::*;
 
@@ -27,11 +27,6 @@ pub fn spawn_player(
     mut commands: Commands,
     options: Res<GameOptions>,
     ) {
-    //let player_start = if let Some(start) = options.player_start {
-    //    start
-    //} else {
-    //    Position::zero()
-    //};
     let player_start = options.player_start;
     commands
         .spawn_bundle(
