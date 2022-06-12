@@ -50,8 +50,7 @@ fn check_textures(
         }
 
         let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-        let atlas_handle = texture_atlases.add(texture_atlas);
-
+        texture_atlases.add(texture_atlas);
 
         state.set(Stages::MakeMap).unwrap();
     }

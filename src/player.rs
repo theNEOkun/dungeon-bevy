@@ -26,15 +26,18 @@ impl Plugin for PlayerPlugin {
 pub fn spawn_player(
     mut commands: Commands,
     options: Res<GameOptions>,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     ) {
     let player_start = options.player_start;
+    let texture = asset_server.load("textures/character.png");
+    let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(16.0, 32.0), 16, 8);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
     commands
         .spawn_bundle(
-            SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(255.0, 0.0, 255.0),
-                ..default()
-            },
+            SpriteSheetBundle {
+            texture_atlas: texture_atlas_handle,
+            sprite: TextureAtlasSprite::new(1),
             transform: Transform {
                 translation: Vec3::new(player_start.x, player_start.y, 100.0),
                 scale: Vec3::new(1.0, 1.0, 1.0),
