@@ -13,7 +13,7 @@ mod prelude {
     pub const SCREEN_WIDTH: f32 = 80.0;
     pub const SCREEN_HEIGHT: f32 = 50.0;
 
-    pub const TIME_STEP: f32 = 2.0 / 60.0;
+    pub const TIME_STEP: f64 = 1.0 / 10.0;
 
     pub use crate::components::*;
     pub use crate::player::*;
@@ -57,7 +57,7 @@ fn main() {
         )
         .add_state(Stages::Prepare)
         .add_plugin(Animation)
-        .add_plugin(MapBuilder)
+        .add_plugin(MapPlugin)
         .add_plugin(Systems)
         .add_plugin(PlayerPlugin)
         .run();

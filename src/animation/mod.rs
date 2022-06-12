@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use bevy::asset::LoadState;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub enum AnimDirection {
     Up = 16*2,
     Down = 16*0,

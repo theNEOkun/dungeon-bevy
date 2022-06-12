@@ -9,13 +9,11 @@ pub struct Systems;
 
 impl Plugin for Systems {
     fn build(&self, app: &mut App) {
-        app
-            .add_system_set(scheduler());
+        app.add_system_set(
+            SystemSet::on_update(Stages::Start)
+                .with_run_criteria(FixedTimestep::steps_per_second(20.0))
+                .with_system(movement::check_for_collisions)
+                .with_system(movement::animation)
+        );
     }
-}
-
-pub fn scheduler() -> SystemSet {
-    SystemSet::on_update(Stages::Start)
-        .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
-        .with_system(movement::check_for_collisions)
 }

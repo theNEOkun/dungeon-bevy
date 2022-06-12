@@ -1,30 +1,31 @@
 mod rect;
 
 use crate::prelude::*;
+use bevy::asset::LoadState;
 use rect::Rect;
 
 const NUM_ROOMS: usize = 20;
 
-pub struct MapArch {
+pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
     pub player_start: Position,
 }
 
-impl MapArch {
+impl MapBuilder {
     pub fn new(rng: &mut ThreadRng) -> Self {
-        let mut arch = MapArch {
+        let mut mb = Self {
             map: Map::new(),
             rooms: Vec::new(),
             player_start: Position::zero(),
         };
 
-        arch.fill(TileType::Wall);
-        arch.build_random_rooms(rng);
-        arch.build_corridors(rng);
-        arch.player_start = Position::new_from_position(arch.rooms[0].center());
+        mb.fill(TileType::Wall);
+        mb.build_random_rooms(rng);
+        mb.build_corridors(rng);
+        mb.player_start = Position::new_from_position(mb.rooms[0].center());
 
-        arch
+        mb
     }
 
     /// Fills the map with a certain tile
@@ -104,54 +105,55 @@ impl MapArch {
     }
 }
 
+pub struct MapPlugin;
+
+impl Plugin for MapPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(MapBuilder::new(&mut thread_rng()));
+        app.add_startup_system(make_map);
+    }
+}
+
 pub fn make_map(
     mut commands: Commands,
     mut options: ResMut<GameOptions>,
     mut state: ResMut<State<Stages>>,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mb: Res<MapBuilder>,
 ) {
-    let map_builder = MapArch::new(&mut thread_rng());
     let texture = asset_server.load("textures/dungeonfont.png");
-    let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(32.0, 32.0), 16, 16);
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
-    for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
-        for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
-            let pos = Position::new_from_usize(x, y);
-            let tile = map_builder.map[&pos];
-            let (tile, extra) = match tile {
-                TileType::Wall => (b'#' as usize, Some(Wall)),
-                TileType::Floor => (b'.' as usize, None),
-                _ => (0, None),
-            };
-            let mut sprite = commands.spawn_bundle(SpriteSheetBundle {
-                texture_atlas: texture_atlas_handle.clone(),
-                sprite: TextureAtlasSprite {
-                    index: tile,
-                    custom_size: Some(Vec2::new(1.0, 1.0)),
+        let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(32.0, 32.0), 16, 16);
+        let texture_atlas_handle = texture_atlases.add(texture_atlas);
+        for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
+            for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
+                let pos = Position::new_from_usize(x, y);
+                let tile = mb.map[&pos];
+                let (tile, extra) = match tile {
+                    TileType::Wall => (b'#' as usize, Some(Wall)),
+                    TileType::Floor => (b'.' as usize, None),
+                    _ => (0, None),
+                };
+                let mut sprite = commands.spawn_bundle(SpriteSheetBundle {
+                    texture_atlas: texture_atlas_handle.clone(),
+                    sprite: TextureAtlasSprite {
+                        index: tile,
+                        custom_size: Some(Vec2::new(1.0, 1.0)),
+                        ..default()
+                    },
+                    transform: Transform {
+                        translation: Vec3::new(x as f32, y as f32, 1.0),
+                        ..default()
+                    },
                     ..default()
-                },
-                transform: Transform {
-                    translation: Vec3::new(x as f32, y as f32, 1.0),
-                    ..default()
-                },
-                ..default()
-            });
-            sprite.insert(pos);
-            if let Some(extra) = extra {
-                sprite.insert(extra);
+                });
+                sprite.insert(pos);
+                if let Some(extra) = extra {
+                    sprite.insert(extra);
+                }
             }
-        }
     }
-    commands.insert_resource(map_builder.map);
-    options.player_start = map_builder.player_start;
-    state.set(Stages::Start).unwrap();
-}
-
-pub struct MapBuilder;
-
-impl Plugin for MapBuilder {
-    fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(Stages::MakeMap).with_system(make_map));
-    }
+        options.player_start = mb.player_start;
+        state.set(Stages::Start).unwrap();
+        println!("Done");
 }

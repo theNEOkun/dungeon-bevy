@@ -21,6 +21,7 @@ pub fn spawn_player(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
+    println!("Player");
     let player_start = options.player_start;
     let texture = asset_server.load("textures/character.png");
     let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(16.0, 32.0), 16, 8);
@@ -42,17 +43,21 @@ pub fn spawn_player(
         })
         .insert(player_start)
         .insert(Player)
-        .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
+        .insert(Animated {
+            frame: 0,
+            direction: AnimDirection::Down,
+        })
+        .insert(AnimationTimer(Timer::from_seconds(0.01, true)))
         .insert(Collider);
     commands.spawn_bundle(new_camera_2d());
 }
 
 pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player: Query<(Entity, &mut Transform, &mut Position), With<Player>>,
+    mut player: Query<(Entity, &mut Transform, &mut Animated, &mut TextureAtlasSprite), With<Player>>,
     mut event_writer: EventWriter<WantsToMove>,
 ) {
-    for (entity, _, position) in player.iter_mut() {
+    for (entity, _, mut animated, mut sprite) in player.iter_mut() {
         let mut delta = (0.0, 0.0);
         if keyboard_input.pressed(KeyCode::Left) {
             delta.0 = -1.0;
@@ -80,14 +85,18 @@ pub fn player_movement(
                 AnimDirection::Up
             }
         } else {
-            AnimDirection::Down
+            animated.direction
         };
         if delta != (0.0, 0.0) {
             event_writer.send(WantsToMove {
                 entity,
                 destination,
-                direction: anim_dir
             });
+        } else {
+            sprite.index = anim_dir as usize;
+        }
+        if anim_dir != animated.direction {
+            animated.direction = anim_dir;
         }
     }
 }
