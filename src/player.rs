@@ -63,19 +63,20 @@ pub fn player_movement(
         if !visible.is_visible {
             return;
         }
-        let mut destination = Position::zero();
-        if keyboard_input.pressed(KeyCode::Left) {
-            destination.x = -1.0;
+        let destination = if keyboard_input.pressed(KeyCode::Left) {
+            Position::new(-1.0, 0.0)
         }
         else if keyboard_input.pressed(KeyCode::Right) {
-            destination.x = 1.0;
+            Position::new(1.0, 0.0)
         }
         else if keyboard_input.pressed(KeyCode::Up) {
-            destination.y = 1.0;
+            Position::new(0.0, 1.0)
         }
         else if keyboard_input.pressed(KeyCode::Down) {
-            destination.y = -1.0;
-        }
+            Position::new(0.0, -1.0)
+        } else {
+            Position::zero()
+        };
         let anim_dir = if destination.x != 0.0 {
             if destination.x < 0.0 {
                 AnimDirection::Right
