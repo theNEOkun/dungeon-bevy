@@ -39,7 +39,7 @@ pub fn spawn_player(
                 ..default()
             },
             visibility: Visibility {
-                is_visible: false
+                is_visible: true
             },
             ..default()
         })

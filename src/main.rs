@@ -4,7 +4,6 @@ mod player;
 mod systems;
 mod camera;
 mod mapbuilder;
-mod animation;
 
 mod prelude {
     pub use bevy::prelude::*;
@@ -21,11 +20,18 @@ mod prelude {
     pub use crate::map::*;
     pub use crate::systems::*;
     pub use crate::camera::*;
-    pub use crate::animation::*;
     pub use crate::*;
 }
 
 use prelude::*;
+
+#[derive(Copy, Clone, PartialEq)]
+pub enum AnimDirection {
+    Up = 16 * 2,
+    Down = 16 * 0,
+    Left = 16 * 1,
+    Right = 16 * 3,
+}
 
 #[derive(Debug)]
 pub struct GameOptions {
@@ -55,8 +61,7 @@ fn main() {
                 ..default()
             }
         )
-        .add_state(Stages::Prepare)
-        .add_plugin(Animation)
+        .add_state(Stages::MakeMap)
         .add_plugin(MapPlugin)
         .add_plugin(Systems)
         .add_plugin(PlayerPlugin)
