@@ -36,6 +36,7 @@ pub struct GameOptions {
 #[derive(StageLabel)]
 pub enum Stages {
     Prepare,
+    MakeMap,
     Start,
     Cleanup
 }
@@ -47,6 +48,7 @@ fn main() {
         .add_event::<WantsToMove>()
         .insert_resource(GameOptions{ player_start: Position::zero() })
         .add_state(Stages::Prepare)
+        .add_plugin(Animation)
         .add_plugin(MapBuilder)
         .add_plugin(Systems)
         .add_plugin(PlayerPlugin)

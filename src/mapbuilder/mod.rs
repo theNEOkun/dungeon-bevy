@@ -1,6 +1,5 @@
-
-use crate::prelude::*;
 use crate::camera::*;
+use crate::prelude::*;
 
 #[derive(Clone, Copy)]
 pub struct Rect {
@@ -157,14 +156,14 @@ pub fn make_map(
     mut commands: Commands,
     mut options: ResMut<GameOptions>,
     mut state: ResMut<State<Stages>>,
-    ) {
+) {
     let map_builder = MapArch::new(&mut thread_rng());
     for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
         for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
             let pos = Position::new_from_usize(x, y);
             match map_builder.map[&pos] {
-                TileType::Wall => commands.spawn_bundle(
-                    SpriteBundle {
+                TileType::Wall => commands
+                    .spawn_bundle(SpriteBundle {
                         sprite: Sprite {
                             color: Color::YELLOW,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
@@ -179,8 +178,8 @@ pub fn make_map(
                     })
                     .insert(pos)
                     .insert(Wall),
-                TileType::Floor => commands.spawn_bundle(
-                    SpriteBundle {
+                TileType::Floor => commands
+                    .spawn_bundle(SpriteBundle {
                         sprite: Sprite {
                             color: Color::BLUE,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
@@ -194,8 +193,8 @@ pub fn make_map(
                         ..default()
                     })
                     .insert(pos),
-                _ => commands.spawn_bundle(
-                    SpriteBundle {
+                _ => commands
+                    .spawn_bundle(SpriteBundle {
                         sprite: Sprite {
                             color: Color::RED,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
@@ -211,7 +210,7 @@ pub fn make_map(
                     .insert(pos),
             };
         }
-    };
+    }
     commands.insert_resource(map_builder.map);
     options.player_start = map_builder.player_start;
     state.set(Stages::Start).unwrap();
@@ -221,6 +220,6 @@ pub struct MapBuilder;
 
 impl Plugin for MapBuilder {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(make_map);
+        app.add_system_set(SystemSet::on_enter(Stages::MakeMap).with_system(make_map));
     }
 }
