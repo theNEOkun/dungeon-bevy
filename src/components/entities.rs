@@ -13,6 +13,9 @@ pub struct Animated {
     pub direction: AnimDirection,
 }
 
+#[derive(Component, Deref, DerefMut)]
+pub struct AnimationTimer(pub Timer);
+
 /// Components to the entity
 #[derive(Component)]
 pub struct MapLevel(pub i32);

@@ -45,6 +45,10 @@ impl Position {
         self.x <= other.x && self.x > (other.x - 1.0) &&
         self.y <= other.y && self.y > (other.y - 1.0)
     }
+
+    pub fn as_tuple(&self) -> (&f32, &f32) {
+        (&self.x, &self.y)
+    }
 }
 
 impl std::ops::Add for Position {

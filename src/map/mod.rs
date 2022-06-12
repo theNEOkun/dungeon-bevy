@@ -168,7 +168,6 @@ impl std::ops::Index<&Position> for Map {
 
     fn index(&self, point: &Position) -> &Self::Output {
         let idx = map_idx_f(point);
-        println!("{idx}");
         &self.tiles[idx]
     }
 }
