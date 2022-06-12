@@ -10,12 +10,7 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(
             SystemSet::on_update(Stages::Start)
                 .with_system(player_movement)
-                .with_system(camera_follows_player.after(check_collision)),
-        );
-        app.add_system_set(
-            SystemSet::on_update(Stages::Start)
-                .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
-                .with_system(check_collision.after(player_movement)),
+                .with_system(camera_follows_player.after(player_movement)),
         );
     }
 }
@@ -50,45 +45,6 @@ pub fn spawn_player(
         .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
         .insert(Collider);
     commands.spawn_bundle(new_camera_2d());
-}
-
-pub fn check_collision(
-    mut player: Query<
-        (
-            Entity,
-            &mut Position,
-            &mut Transform,
-            &mut AnimationTimer,
-            &mut TextureAtlasSprite,
-        ),
-        With<Collider>,
-    >,
-    walls: Query<(Entity, &Position, &Transform), (With<Wall>, Without<Collider>)>,
-    mut event_reader: EventReader<WantsToMove>,
-    map: Res<Map>,
-    time: Res<Time>,
-) {
-    for (_, mut position, mut transform, mut timer, mut sprite) in player.iter_mut() {
-        for (_, _, _) in walls.iter() {
-            for each in event_reader.iter() {
-                let destination = Position::new(
-                    position.x + each.destination.x,
-                    position.y + each.destination.y,
-                );
-                let can_move = map.can_enter_tile_f(&destination);
-                if can_move {
-                    timer.tick(time.delta());
-                    if timer.just_finished() {
-                        sprite.index = ((sprite.index + 1) % 4) + each.direction as usize;
-                        position.x = destination.x;
-                        position.y = destination.y;
-                        transform.translation.x = position.x;
-                        transform.translation.y = position.y;
-                    }
-                }
-            }
-        }
-    }
 }
 
 pub fn player_movement(

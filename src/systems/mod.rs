@@ -15,8 +15,8 @@ impl Plugin for Systems {
 }
 
 pub fn scheduler() -> SystemSet {
-    SystemSet::new()
+    SystemSet::on_update(Stages::Start)
         .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
-        //.with_system(collisions::check_for_collisions)
+        .with_system(movement::check_for_collisions)
         //.with_system(movement::movement)
 }
