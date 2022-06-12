@@ -11,6 +11,7 @@ impl Plugin for PlayerPlugin {
             SystemSet::new()
                 .with_system(player_movement)
                 .with_system(check_collision)
+                .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
                 .with_system(camera_follows_player.after(check_collision)),
         );
     }
@@ -23,10 +24,10 @@ pub fn check_collision(
     map: Res<Map>,
 ) {
     for (_, mut position, mut transform) in player.iter_mut() {
-        for (_, _, wall_trans) in walls.iter() {
+        for (_, _, _) in walls.iter() {
             for each in event_reader.iter() {
-                let collision = map.can_enter_tile_f(&each.destination);
-                if collision {
+                let can_move = map.can_enter_tile_f(&each.destination);
+                if can_move {
                     position.x = each.destination.x;
                     position.y = each.destination.y;
                     transform.translation.x = position.x;
@@ -47,16 +48,16 @@ pub fn player_movement(
     for (entity, _, position) in player.iter_mut() {
         let mut delta = (0.0, 0.0);
         if keyboard_input.pressed(KeyCode::Left) {
-            delta.0 = -0.1;
+            delta.0 = -1.0;
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            delta.0 = 0.1;
+            delta.0 = 1.0;
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            delta.1 = 0.1;
+            delta.1 = 1.0;
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            delta.1 = -0.1;
+            delta.1 = -1.0;
         }
         let destination = Position::new(position.x + delta.0, position.y + delta.1);
         if delta != (0.0, 0.0) {

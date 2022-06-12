@@ -12,23 +12,16 @@ mod prelude {
     pub const SCREEN_WIDTH: f32 = 80.0;
     pub const SCREEN_HEIGHT: f32 = 50.0;
 
-    pub const TIME_STEP: f32 = 1.0 / 60.0;
+    pub const TIME_STEP: f32 = 1.0 / 30.0;
 
     pub use crate::components::*;
     pub use crate::player::*;
     pub use crate::mapbuilder::*;
     pub use crate::map::*;
     pub use crate::systems::*;
-    pub use crate::GameOptions;
 }
 
-use bevy::utils::tracing::Event;
 use prelude::*;
-
-#[derive(Debug)]
-pub struct GameOptions {
-    player_start: Option<Position>,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[derive(StageLabel)]
