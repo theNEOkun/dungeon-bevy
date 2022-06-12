@@ -123,37 +123,36 @@ pub fn make_map(
     mb: Res<MapBuilder>,
 ) {
     let texture = asset_server.load("textures/dungeonfont.png");
-        let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(32.0, 32.0), 16, 16);
-        let texture_atlas_handle = texture_atlases.add(texture_atlas);
-        for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
-            for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
-                let pos = Position::new_from_usize(x, y);
-                let tile = mb.map[&pos];
-                let (tile, extra) = match tile {
-                    TileType::Wall => (b'#' as usize, Some(Wall)),
-                    TileType::Floor => (b'.' as usize, None),
-                    _ => (0, None),
-                };
-                let mut sprite = commands.spawn_bundle(SpriteSheetBundle {
-                    texture_atlas: texture_atlas_handle.clone(),
-                    sprite: TextureAtlasSprite {
-                        index: tile,
-                        custom_size: Some(Vec2::new(1.0, 1.0)),
-                        ..default()
-                    },
-                    transform: Transform {
-                        translation: Vec3::new(x as f32, y as f32, 1.0),
-                        ..default()
-                    },
+    let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(32.0, 32.0), 16, 16);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
+        for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
+            let pos = Position::new_from_usize(x, y);
+            let tile = mb.map[&pos];
+            let (tile, extra) = match tile {
+                TileType::Wall => (b'#' as usize, Some(Wall)),
+                TileType::Floor => (b'.' as usize, None),
+                _ => (0, None),
+            };
+            let mut sprite = commands.spawn_bundle(SpriteSheetBundle {
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    index: tile,
+                    custom_size: Some(Vec2::new(1.0, 1.0)),
                     ..default()
-                });
-                sprite.insert(pos);
-                if let Some(extra) = extra {
-                    sprite.insert(extra);
-                }
+                },
+                transform: Transform {
+                    translation: Vec3::new(x as f32, y as f32, 1.0),
+                    ..default()
+                },
+                ..default()
+            });
+            sprite.insert(pos);
+            if let Some(extra) = extra {
+                sprite.insert(extra);
             }
+        }
     }
-        options.player_start = mb.player_start;
-        state.set(Stages::Start).unwrap();
-        println!("Done");
+    options.player_start = mb.player_start;
+    state.set(Stages::Start).unwrap();
 }

@@ -21,7 +21,6 @@ pub fn spawn_player(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
-    println!("Player");
     let player_start = options.player_start;
     let texture = asset_server.load("textures/character.png");
     let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(16.0, 32.0), 16, 8);
@@ -39,6 +38,9 @@ pub fn spawn_player(
                 scale: Vec3::new(1.0, 1.0, 1.0),
                 ..default()
             },
+            visibility: Visibility {
+                is_visible: false
+            },
             ..default()
         })
         .insert(player_start)
@@ -54,10 +56,13 @@ pub fn spawn_player(
 
 pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player: Query<(Entity, &mut Transform, &mut Animated, &mut TextureAtlasSprite), With<Player>>,
+    mut player: Query<(Entity, &mut Transform, &mut Animated, &mut TextureAtlasSprite, &Visibility), With<Player>>,
     mut event_writer: EventWriter<WantsToMove>,
 ) {
-    for (entity, _, mut animated, mut sprite) in player.iter_mut() {
+    for (entity, _, mut animated, mut sprite, visible) in player.iter_mut() {
+        if !visible.is_visible {
+            return;
+        }
         let mut delta = (0.0, 0.0);
         if keyboard_input.pressed(KeyCode::Left) {
             delta.0 = -1.0;
