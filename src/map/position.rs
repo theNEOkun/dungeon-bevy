@@ -49,6 +49,18 @@ impl Position {
     pub fn as_tuple(&self) -> (&f32, &f32) {
         (&self.x, &self.y)
     }
+
+    pub fn is_zero(&self) -> bool {
+        self.x == 0.0 && self.y == 0.0
+    }
+
+    pub fn normalize(&self) -> Self {
+        let length = f32::sqrt((self.x * self.x) + (self.y * self.y));
+        Self {
+            x: self.x / length,
+            y: self.y / length
+        }
+    }
 }
 
 impl std::ops::Add for Position {

@@ -63,20 +63,19 @@ pub fn player_movement(
         if !visible.is_visible {
             return;
         }
-        let mut delta = (0.0, 0.0);
+        let mut destination = Position::zero();
         if keyboard_input.pressed(KeyCode::Left) {
-            delta.0 = -1.0;
+            destination.x = -1.0;
         }
-        if keyboard_input.pressed(KeyCode::Right) {
-            delta.0 = 1.0;
+        else if keyboard_input.pressed(KeyCode::Right) {
+            destination.x = 1.0;
         }
-        if keyboard_input.pressed(KeyCode::Up) {
-            delta.1 = 1.0;
+        else if keyboard_input.pressed(KeyCode::Up) {
+            destination.y = 1.0;
         }
-        if keyboard_input.pressed(KeyCode::Down) {
-            delta.1 = -1.0;
+        else if keyboard_input.pressed(KeyCode::Down) {
+            destination.y = -1.0;
         }
-        let destination = Position::new(delta.0, delta.1);
         let anim_dir = if destination.x != 0.0 {
             if destination.x < 0.0 {
                 AnimDirection::Right
@@ -92,7 +91,8 @@ pub fn player_movement(
         } else {
             animated.direction
         };
-        if delta != (0.0, 0.0) {
+        if !destination.is_zero() {
+            let destination = destination.normalize();
             event_writer.send(WantsToMove {
                 entity,
                 destination,
