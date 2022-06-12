@@ -7,6 +7,12 @@ pub struct Player;
 #[derive(Component)]
 pub struct Enemy;
 
+#[derive(Component)]
+pub struct Animated {
+    pub frame: i32,
+    pub direction: AnimDirection,
+}
+
 /// Components to the entity
 #[derive(Component)]
 pub struct MapLevel(pub i32);

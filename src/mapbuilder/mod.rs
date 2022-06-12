@@ -155,6 +155,8 @@ impl MapArch {
 
 pub fn make_map(
     mut commands: Commands,
+    mut options: ResMut<GameOptions>,
+    mut state: ResMut<State<Stages>>,
     ) {
     let map_builder = MapArch::new(&mut thread_rng());
     for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
@@ -211,36 +213,8 @@ pub fn make_map(
         }
     };
     commands.insert_resource(map_builder.map);
-    spawn_player(commands, map_builder.player_start)
-}
-
-pub fn spawn_player(
-    mut commands: Commands,
-    player_start: Position,
-    ) {
-    //let player_start = if let Some(start) = options.player_start {
-    //    start
-    //} else {
-    //    Position::zero()
-    //};
-    commands
-        .spawn_bundle(
-            SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(255.0, 0.0, 255.0),
-                ..default()
-            },
-            transform: Transform {
-                translation: Vec3::new(player_start.x, player_start.y, 100.0),
-                scale: Vec3::new(1.0, 1.0, 1.0),
-                ..default()
-            },
-            ..default()
-        })
-        .insert(player_start)
-        .insert(Player)
-        .insert(Collider);
-    commands.spawn_bundle(new_camera_2d());
+    options.player_start = map_builder.player_start;
+    state.set(Stages::Start).unwrap();
 }
 
 pub struct MapBuilder;

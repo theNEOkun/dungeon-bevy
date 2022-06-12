@@ -1,5 +1,4 @@
 use bevy::core::FixedTimestep;
-use bevy::sprite::collide_aabb::collide;
 
 use crate::prelude::*;
 
@@ -8,13 +7,54 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(
-            SystemSet::new()
+            SystemSet::on_enter(Stages::Start)
+                .with_system(spawn_player)
+        );
+        app.add_system_set(
+            SystemSet::on_update(Stages::Start)
                 .with_system(player_movement)
-                .with_system(check_collision)
-                .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
                 .with_system(camera_follows_player.after(check_collision)),
         );
+        app.add_system_set(
+            SystemSet::on_update(Stages::Start)
+                .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
+                .with_system(check_collision.after(player_movement))
+        );
     }
+}
+
+pub fn spawn_player(
+    mut commands: Commands,
+    options: Res<GameOptions>,
+    ) {
+    //let player_start = if let Some(start) = options.player_start {
+    //    start
+    //} else {
+    //    Position::zero()
+    //};
+    let player_start = options.player_start;
+    commands
+        .spawn_bundle(
+            SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(255.0, 0.0, 255.0),
+                ..default()
+            },
+            transform: Transform {
+                translation: Vec3::new(player_start.x, player_start.y, 100.0),
+                scale: Vec3::new(1.0, 1.0, 1.0),
+                ..default()
+            },
+            ..default()
+        })
+        .insert(player_start)
+        .insert(Player)
+        .insert(Animated {
+            frame: 0,
+            direction: AnimDirection::Down,
+        })
+        .insert(Collider);
+    commands.spawn_bundle(new_camera_2d());
 }
 
 pub fn check_collision(

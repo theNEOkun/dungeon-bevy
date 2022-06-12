@@ -4,6 +4,7 @@ mod player;
 mod systems;
 mod camera;
 mod mapbuilder;
+mod animation;
 
 mod prelude {
     pub use bevy::prelude::*;
@@ -19,9 +20,17 @@ mod prelude {
     pub use crate::mapbuilder::*;
     pub use crate::map::*;
     pub use crate::systems::*;
+    pub use crate::camera::*;
+    pub use crate::animation::*;
+    pub use crate::*;
 }
 
 use prelude::*;
+
+#[derive(Debug)]
+pub struct GameOptions {
+    player_start: Position,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[derive(StageLabel)]
@@ -36,9 +45,8 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_event::<CheckCollision>()
         .add_event::<WantsToMove>()
-        .add_stage(Stages::Prepare, SystemStage::parallel())
-        .add_stage(Stages::Start, SystemStage::parallel())
-        .add_stage(Stages::Cleanup, SystemStage::parallel())
+        .insert_resource(GameOptions{ player_start: Position::zero() })
+        .add_state(Stages::Prepare)
         .add_plugin(MapBuilder)
         .add_plugin(Systems)
         .add_plugin(PlayerPlugin)
