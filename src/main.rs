@@ -13,7 +13,7 @@ mod prelude {
     pub const SCREEN_WIDTH: f32 = 80.0;
     pub const SCREEN_HEIGHT: f32 = 50.0;
 
-    pub const TIME_STEP: f32 = 1.0 / 30.0;
+    pub const TIME_STEP: f32 = 2.0 / 60.0;
 
     pub use crate::components::*;
     pub use crate::player::*;

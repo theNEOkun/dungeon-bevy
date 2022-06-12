@@ -166,53 +166,29 @@ pub fn make_map(
     for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
         for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
             let pos = Position::new_from_usize(x, y);
-            match map_builder.map[&pos] {
-                TileType::Wall => commands
-                    .spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: texture_atlas_handle.clone(),
-                        sprite: TextureAtlasSprite {
-                            index: b'#' as usize,
-                            custom_size: Some(Vec2::new(1.0, 1.0)),
-                            ..default()
-                        },
-                        transform: Transform {
-                            translation: Vec3::new(x as f32, y as f32, 1.0),
-                            ..default()
-                        },
-                        ..default()
-                    })
-                    .insert(pos)
-                    .insert(Wall),
-                TileType::Floor => commands
-                    .spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: texture_atlas_handle.clone(),
-                        sprite: TextureAtlasSprite {
-                            index: b'.' as usize,
-                            custom_size: Some(Vec2::new(1.0, 1.0)),
-                            ..default()
-                        },
-                        transform: Transform {
-                            translation: Vec3::new(x as f32, y as f32, 0.0),
-                            ..default()
-                        },
-                        ..default()
-                    })
-                    .insert(pos),
-                _ => commands
-                    .spawn_bundle(SpriteBundle {
-                        sprite: Sprite {
-                            color: Color::RED,
-                            custom_size: Some(Vec2::new(1.0, 1.0)),
-                            ..default()
-                        },
-                        transform: Transform {
-                            translation: Vec3::new(x as f32, y as f32, 1.0),
-                            ..default()
-                        },
-                        ..default()
-                    })
-                    .insert(pos),
+            let tile = map_builder.map[&pos];
+            let (tile, extra) = match tile {
+                TileType::Wall => (b'#' as usize, Some(Wall)),
+                TileType::Floor => (b'.' as usize, None),
+                _ => (0, None),
             };
+            let mut sprite = commands.spawn_bundle(SpriteSheetBundle {
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    index: tile,
+                    custom_size: Some(Vec2::new(1.0, 1.0)),
+                    ..default()
+                },
+                transform: Transform {
+                    translation: Vec3::new(x as f32, y as f32, 1.0),
+                    ..default()
+                },
+                ..default()
+            });
+            sprite.insert(pos);
+            if let Some(extra) = extra {
+                sprite.insert(extra);
+            }
         }
     }
     commands.insert_resource(map_builder.map);
