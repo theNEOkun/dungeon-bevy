@@ -156,22 +156,27 @@ pub fn make_map(
     mut commands: Commands,
     mut options: ResMut<GameOptions>,
     mut state: ResMut<State<Stages>>,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     let map_builder = MapArch::new(&mut thread_rng());
+    let texture = asset_server.load("textures/dungeonfont.png");
+    let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(32.0, 32.0), 16, 16);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
     for y in 0..=(SCREEN_HEIGHT - 1.0) as usize {
         for x in 0..=(SCREEN_WIDTH - 1.0) as usize {
             let pos = Position::new_from_usize(x, y);
             match map_builder.map[&pos] {
                 TileType::Wall => commands
-                    .spawn_bundle(SpriteBundle {
-                        sprite: Sprite {
-                            color: Color::YELLOW,
+                    .spawn_bundle(SpriteSheetBundle {
+                        texture_atlas: texture_atlas_handle.clone(),
+                        sprite: TextureAtlasSprite {
+                            index: b'#' as usize,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
                         transform: Transform {
                             translation: Vec3::new(x as f32, y as f32, 1.0),
-                            scale: Vec3::new(1.0, 1.0, 1.0),
                             ..default()
                         },
                         ..default()
@@ -179,15 +184,15 @@ pub fn make_map(
                     .insert(pos)
                     .insert(Wall),
                 TileType::Floor => commands
-                    .spawn_bundle(SpriteBundle {
-                        sprite: Sprite {
-                            color: Color::BLUE,
+                    .spawn_bundle(SpriteSheetBundle {
+                        texture_atlas: texture_atlas_handle.clone(),
+                        sprite: TextureAtlasSprite {
+                            index: b'.' as usize,
                             custom_size: Some(Vec2::new(1.0, 1.0)),
                             ..default()
                         },
                         transform: Transform {
-                            translation: Vec3::new(x as f32, y as f32, 1.0),
-                            scale: Vec3::new(1.0, 1.0, 1.0),
+                            translation: Vec3::new(x as f32, y as f32, 0.0),
                             ..default()
                         },
                         ..default()
@@ -202,7 +207,6 @@ pub fn make_map(
                         },
                         transform: Transform {
                             translation: Vec3::new(x as f32, y as f32, 1.0),
-                            scale: Vec3::new(1.0, 1.0, 1.0),
                             ..default()
                         },
                         ..default()

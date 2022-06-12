@@ -47,6 +47,14 @@ fn main() {
         .add_event::<CheckCollision>()
         .add_event::<WantsToMove>()
         .insert_resource(GameOptions{ player_start: Position::zero() })
+        .insert_resource(
+            WindowDescriptor {
+                title: "DungeonCrawler".to_string(),
+                width: 1024.0,
+                height: 768.0,
+                ..default()
+            }
+        )
         .add_state(Stages::Prepare)
         .add_plugin(Animation)
         .add_plugin(MapBuilder)

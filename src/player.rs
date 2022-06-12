@@ -37,7 +37,11 @@ pub fn spawn_player(
         .spawn_bundle(
             SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
-            sprite: TextureAtlasSprite::new(1),
+            sprite: TextureAtlasSprite {
+                index: 0,
+                custom_size: Some(Vec2::new(1.0, 2.0)),
+                ..default()
+            },
             transform: Transform {
                 translation: Vec3::new(player_start.x, player_start.y, 100.0),
                 scale: Vec3::new(1.0, 1.0, 1.0),
