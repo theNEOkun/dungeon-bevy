@@ -9,7 +9,8 @@ pub struct Enemy;
 
 #[derive(Component)]
 pub struct Animated {
-    pub frame: i32,
+    pub timer: f32,
+    pub offset: i32,
     pub direction: AnimDirection,
 }
 

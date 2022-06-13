@@ -38,25 +38,27 @@ pub fn spawn_player(
                 scale: Vec3::new(1.0, 1.0, 1.0),
                 ..default()
             },
-            visibility: Visibility {
-                is_visible: true
-            },
+            visibility: Visibility { is_visible: true },
             ..default()
         })
         .insert(player_start)
         .insert(Player)
-        .insert(Animated {
-            frame: 0,
-            direction: AnimDirection::Down,
-        })
-        .insert(AnimationTimer(Timer::from_seconds(0.01, true)))
         .insert(Collider);
     commands.spawn_bundle(new_camera_2d());
 }
 
 pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player: Query<(Entity, &mut Transform, &mut Animated, &mut TextureAtlasSprite, &Visibility), With<Player>>,
+    mut player: Query<
+        (
+            Entity,
+            &mut Transform,
+            &mut Animated,
+            &mut TextureAtlasSprite,
+            &Visibility,
+        ),
+        With<Player>,
+    >,
     mut event_writer: EventWriter<WantsToMove>,
 ) {
     for (entity, _, mut animated, mut sprite, visible) in player.iter_mut() {
@@ -65,14 +67,11 @@ pub fn player_movement(
         }
         let destination = if keyboard_input.pressed(KeyCode::Left) {
             Position::new(-1.0, 0.0)
-        }
-        else if keyboard_input.pressed(KeyCode::Right) {
+        } else if keyboard_input.pressed(KeyCode::Right) {
             Position::new(1.0, 0.0)
-        }
-        else if keyboard_input.pressed(KeyCode::Up) {
+        } else if keyboard_input.pressed(KeyCode::Up) {
             Position::new(0.0, 1.0)
-        }
-        else if keyboard_input.pressed(KeyCode::Down) {
+        } else if keyboard_input.pressed(KeyCode::Down) {
             Position::new(0.0, -1.0)
         } else {
             Position::zero()
@@ -97,6 +96,11 @@ pub fn player_movement(
             event_writer.send(WantsToMove {
                 entity,
                 destination,
+                animation: Some(Animated {
+                    timer: 0.1,
+                    offset: 0,
+                    direction: AnimDirection::Down,
+                }),
             });
         } else {
             sprite.index = anim_dir as usize;

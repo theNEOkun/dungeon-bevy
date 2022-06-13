@@ -52,6 +52,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_event::<CheckCollision>()
         .add_event::<WantsToMove>()
+        .add_event::<Animate>()
         .insert_resource(GameOptions{ player_start: Position::zero() })
         .insert_resource(
             WindowDescriptor {

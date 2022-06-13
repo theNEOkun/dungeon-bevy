@@ -6,14 +6,14 @@ use crate::prelude::*;
 use bevy::asset::LoadState;
 use rect::Rect;
 
+use empty::EmptyArchitect;
+use rooms::RoomsArchitect;
+
 const NUM_ROOMS: usize = 20;
 
 trait MapArchitect {
     fn new(&mut self, rng: &mut ThreadRng) -> MapBuilder;
 }
-
-use empty::EmptyArchitect;
-use rooms::RoomsArchitect;
 
 pub struct MapBuilder {
     pub map: Map,

@@ -4,6 +4,7 @@ use super::*;
 pub struct WantsToMove {
     pub entity: Entity,
     pub destination: Position,
+    pub animation: Option<Animated>,
 }
 
 #[derive(Component)]
@@ -16,6 +17,8 @@ pub struct CheckCollision {
     pub entity: Entity,
     pub destination: Position,
 }
+
+pub struct Animate;
 
 #[derive(Component)]
 pub struct ActivateItem {
