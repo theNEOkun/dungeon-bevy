@@ -12,6 +12,7 @@ pub struct Animated {
     pub timer: Timer,
     pub offset: usize,
     pub length: usize,
+    pub counter: usize,
 }
 
 #[derive(Component)]

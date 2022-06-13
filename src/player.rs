@@ -8,6 +8,7 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(
             SystemSet::on_update(Stages::Start)
                 .with_system(player_movement)
+                .with_system(player_attacking)
                 .with_system(camera_follows_player.after(player_movement)),
         );
     }
@@ -47,15 +48,41 @@ pub fn spawn_player(
                 timer: Timer::from_seconds(0.1, true),
                 offset: 0,
                 length: 4,
+                counter: 0,
             },
             attacking: Animated {
-                timer: Timer::from_seconds(0.1, true),
+                timer: Timer::from_seconds(0.01, true),
                 offset: 5,
                 length: 3,
+                counter: 0,
             },
         })
         .insert(Collider);
     commands.spawn_bundle(new_camera_2d());
+}
+
+pub fn player_attacking(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut player: Query<
+        (
+            Entity,
+            &mut Transform,
+            &Visibility,
+        ),
+        With<Player>,
+    >,
+    mut event_writer: EventWriter<WantsToAttack>,
+) {
+    for (entity, _, visible) in player.iter_mut() {
+        if !visible.is_visible {
+            return;
+        }
+        if keyboard_input.just_pressed(KeyCode::Space) {
+            event_writer.send(WantsToAttack {
+                attacker: entity,
+            });
+        }
+    }
 }
 
 pub fn player_movement(

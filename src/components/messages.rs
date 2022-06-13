@@ -9,7 +9,7 @@ pub struct WantsToMove {
 #[derive(Component)]
 pub struct WantsToAttack {
     pub attacker: Entity,
-    pub victim: Entity,
+    //pub victim: Entity,
 }
 
 pub struct CheckCollision {
