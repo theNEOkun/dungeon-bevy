@@ -10,8 +10,15 @@ pub struct Enemy;
 #[derive(Component)]
 pub struct Animated {
     pub timer: Timer,
-    pub offset: i32,
+    pub offset: usize,
+    pub length: usize,
     pub direction: AnimDirection,
+}
+
+#[derive(Component)]
+pub struct Animations {
+    pub walking: Animated,
+    pub attacking: Animated,
 }
 
 #[derive(Component, Deref, DerefMut)]

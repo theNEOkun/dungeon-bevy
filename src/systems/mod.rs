@@ -1,4 +1,5 @@
 mod movement;
+mod combat;
 
 use crate::prelude::*;
 use bevy::core::FixedTimestep;
@@ -10,7 +11,11 @@ impl Plugin for Systems {
         app.add_system_set(
             SystemSet::on_update(Stages::Start)
                 .with_system(movement::check_for_collisions)
-                .with_system(movement::animation)
+                .with_system(movement::walking_animation)
+        );
+        app.add_system_set(
+            SystemSet::on_update(Stages::Start)
+            .with_system(combat::attack_animation)
         );
     }
 }

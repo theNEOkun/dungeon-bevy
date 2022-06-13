@@ -21,7 +21,7 @@ pub fn check_for_collisions(
     }
 }
 
-pub fn animation(
+pub fn walking_animation(
     mut player: Query<(
         Entity,
         &mut TextureAtlasSprite,
@@ -35,7 +35,7 @@ pub fn animation(
         for _ in event_reader.iter() {
             animated.timer.tick(time.delta());
             if animated.timer.finished() {
-                sprite.index = ((sprite.index + 1) % 4) + *direction as usize;
+                sprite.index = ((sprite.index + 1) % animated.length) + *direction as usize + animated.offset;
             }
         }
     }

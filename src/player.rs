@@ -42,10 +42,19 @@ pub fn spawn_player(
         .insert(player_start)
         .insert(Player)
         .insert(AnimDirection::Down)
-        .insert(Animated {
-            timer: Timer::from_seconds(0.1, true),
-            offset: 0,
-            direction: AnimDirection::Down,
+        .insert(Animations {
+            walking: Animated {
+                timer: Timer::from_seconds(0.1, true),
+                offset: 0,
+                length: 4,
+                direction: AnimDirection::Down,
+            },
+            attacking: Animated {
+                timer: Timer::from_seconds(0.1, true),
+                offset: 5,
+                length: 3,
+                direction: AnimDirection::Down,
+            },
         })
         .insert(Collider);
     commands.spawn_bundle(new_camera_2d());
