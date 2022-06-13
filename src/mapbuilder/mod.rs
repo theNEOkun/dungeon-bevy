@@ -1,10 +1,19 @@
 mod rect;
+mod empty;
+mod rooms;
 
 use crate::prelude::*;
 use bevy::asset::LoadState;
 use rect::Rect;
 
 const NUM_ROOMS: usize = 20;
+
+trait MapArchitect {
+    fn new(&mut self, rng: &mut ThreadRng) -> MapBuilder;
+}
+
+use empty::EmptyArchitect;
+use rooms::RoomsArchitect;
 
 pub struct MapBuilder {
     pub map: Map,
@@ -14,18 +23,8 @@ pub struct MapBuilder {
 
 impl MapBuilder {
     pub fn new(rng: &mut ThreadRng) -> Self {
-        let mut mb = Self {
-            map: Map::new(),
-            rooms: Vec::new(),
-            player_start: Position::zero(),
-        };
-
-        mb.fill(TileType::Wall);
-        mb.build_random_rooms(rng);
-        mb.build_corridors(rng);
-        mb.player_start = Position::new_from_position(mb.rooms[0].center());
-
-        mb
+        let mut arch = EmptyArchitect{};
+        arch.new(rng)
     }
 
     /// Fills the map with a certain tile
