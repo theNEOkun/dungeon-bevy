@@ -4,7 +4,6 @@ use super::*;
 pub struct WantsToMove {
     pub entity: Entity,
     pub destination: Position,
-    pub animation: Option<Animated>,
 }
 
 #[derive(Component)]

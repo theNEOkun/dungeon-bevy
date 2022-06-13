@@ -9,18 +9,13 @@ pub struct Enemy;
 
 #[derive(Component)]
 pub struct Animated {
-    pub timer: f32,
+    pub timer: Timer,
     pub offset: i32,
     pub direction: AnimDirection,
 }
 
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
-
-#[derive(Component)]
-pub struct Direction {
-    direction: AnimDirection
-}
 
 /// Components to the entity
 #[derive(Component)]

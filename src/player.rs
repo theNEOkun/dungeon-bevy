@@ -41,7 +41,12 @@ pub fn spawn_player(
         })
         .insert(player_start)
         .insert(Player)
-        .insert(AnimDirecq)
+        .insert(AnimDirection::Down)
+        .insert(Animated {
+            timer: Timer::from_seconds(0.1, true),
+            offset: 0,
+            direction: AnimDirection::Down,
+        })
         .insert(Collider);
     commands.spawn_bundle(new_camera_2d());
 }
@@ -52,7 +57,7 @@ pub fn player_movement(
         (
             Entity,
             &mut Transform,
-            &mut Direction,
+            &mut AnimDirection,
             &mut TextureAtlasSprite,
             &Visibility,
         ),
@@ -60,7 +65,7 @@ pub fn player_movement(
     >,
     mut event_writer: EventWriter<WantsToMove>,
 ) {
-    for (entity, _, mut dirr, mut sprite, visible) in player.iter_mut() {
+    for (entity, _, mut direction, mut sprite, visible) in player.iter_mut() {
         if !visible.is_visible {
             return;
         }
@@ -88,24 +93,19 @@ pub fn player_movement(
                 AnimDirection::Up
             }
         } else {
-            animated.direction
+            *direction
         };
         if !destination.is_zero() {
             let destination = destination.normalize();
             event_writer.send(WantsToMove {
                 entity,
                 destination,
-                animation: Some(Animated {
-                    timer: 0.1,
-                    offset: 0,
-                    direction: anim_dir,
-                }),
             });
         } else {
             sprite.index = anim_dir as usize;
         }
-        if anim_dir != animated.direction {
-            animated.direction = anim_dir;
+        if anim_dir != *direction {
+            *direction = anim_dir;
         }
     }
 }
