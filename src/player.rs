@@ -99,7 +99,7 @@ pub fn player_movement(
                 animation: Some(Animated {
                     timer: 0.1,
                     offset: 0,
-                    direction: AnimDirection::Down,
+                    direction: anim_dir,
                 }),
             });
         } else {
