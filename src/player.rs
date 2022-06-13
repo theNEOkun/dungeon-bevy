@@ -1,5 +1,3 @@
-use bevy::{core::FixedTimestep, render::render_resource::Texture};
-
 use crate::prelude::*;
 
 pub struct PlayerPlugin;
@@ -43,6 +41,7 @@ pub fn spawn_player(
         })
         .insert(player_start)
         .insert(Player)
+        .insert(AnimDirecq)
         .insert(Collider);
     commands.spawn_bundle(new_camera_2d());
 }
@@ -53,7 +52,7 @@ pub fn player_movement(
         (
             Entity,
             &mut Transform,
-            &mut Animated,
+            &mut Direction,
             &mut TextureAtlasSprite,
             &Visibility,
         ),
@@ -61,7 +60,7 @@ pub fn player_movement(
     >,
     mut event_writer: EventWriter<WantsToMove>,
 ) {
-    for (entity, _, mut animated, mut sprite, visible) in player.iter_mut() {
+    for (entity, _, mut dirr, mut sprite, visible) in player.iter_mut() {
         if !visible.is_visible {
             return;
         }

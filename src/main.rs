@@ -25,7 +25,7 @@ mod prelude {
 
 use prelude::*;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Component, Copy, Clone, PartialEq)]
 pub enum AnimDirection {
     Up = 16 * 2,
     Down = 16 * 0,
