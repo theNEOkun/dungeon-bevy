@@ -25,7 +25,7 @@ mod prelude {
 
 use prelude::*;
 
-#[derive(Component, Copy, Clone, PartialEq)]
+#[derive(Component, Copy, Clone, PartialEq, Debug)]
 pub enum AnimDirection {
     Up = 16 * 2,
     Down = 16 * 0,
@@ -52,6 +52,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_event::<CheckCollision>()
         .add_event::<WantsToMove>()
+        .add_event::<WantsToAttack>()
         .add_event::<Animate>()
         .insert_resource(GameOptions{ player_start: Position::zero() })
         .insert_resource(

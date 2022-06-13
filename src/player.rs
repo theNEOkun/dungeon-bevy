@@ -47,13 +47,11 @@ pub fn spawn_player(
                 timer: Timer::from_seconds(0.1, true),
                 offset: 0,
                 length: 4,
-                direction: AnimDirection::Down,
             },
             attacking: Animated {
                 timer: Timer::from_seconds(0.1, true),
                 offset: 5,
                 length: 3,
-                direction: AnimDirection::Down,
             },
         })
         .insert(Collider);
@@ -78,13 +76,13 @@ pub fn player_movement(
         if !visible.is_visible {
             return;
         }
-        let destination = if keyboard_input.pressed(KeyCode::Left) {
+        let destination = if keyboard_input.pressed(KeyCode::A) {
             Position::new(-1.0, 0.0)
-        } else if keyboard_input.pressed(KeyCode::Right) {
+        } else if keyboard_input.pressed(KeyCode::D) {
             Position::new(1.0, 0.0)
-        } else if keyboard_input.pressed(KeyCode::Up) {
+        } else if keyboard_input.pressed(KeyCode::W) {
             Position::new(0.0, 1.0)
-        } else if keyboard_input.pressed(KeyCode::Down) {
+        } else if keyboard_input.pressed(KeyCode::S) {
             Position::new(0.0, -1.0)
         } else {
             Position::zero()
