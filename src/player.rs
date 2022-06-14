@@ -48,13 +48,13 @@ pub fn spawn_player(
         .insert(Living)
         .insert(Animations {
             walking: Animated {
-                timer: Timer::from_seconds(0.1, true),
+                timer: Timer::from_seconds(0.2, true),
                 offset: 0,
                 length: 4,
                 counter: 0,
             },
             attacking: Animated {
-                timer: Timer::from_seconds(0.5, true),
+                timer: Timer::from_seconds(0.2, true),
                 offset: (16 * 4),
                 length: 4,
                 counter: 0,
@@ -158,6 +158,7 @@ pub fn player_movement(
     }
 }
 
+/// Handles moving the camera along with the player
 pub fn camera_follows_player(
     mut cameras: Query<&mut Transform, With<Camera>>,
     players: Query<&Position, With<Player>>,

@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+/// Handles the animation for the attacks themselves
 pub fn attack_animation(
     mut commands: Commands,
     mut player: Query<(
@@ -23,14 +24,15 @@ pub fn attack_animation(
                 animated.counter += 1;
                 if animated.counter >= animated.length {
                     animated.counter = 0;
-                    sprite.custom_size = Some(Vec2::new(1.0, 2.0));
                     commands.entity(entity).remove::<AttackAnim>();
+                    sprite.custom_size = Some(Vec2::new(1.0, 2.0));
                 }
             }
         }
     }
 }
 
+/// Handles the attacking
 pub fn attack(
     mut commands: Commands,
     player: Query<Entity, With<Living>>,
