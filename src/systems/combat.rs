@@ -19,7 +19,7 @@ pub fn attack_animation(
                 if animated.counter == 0 {
                     sprite.custom_size = Some(Vec2::new(2.0, 2.0));
                 }
-                sprite.index = animated.counter + *direction as usize + animated.offset;
+                sprite.index = animated.counter + (*direction as usize) / 4 + animated.offset;
                 animated.counter += 1;
                 if animated.counter >= animated.length {
                     animated.counter = 0;

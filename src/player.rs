@@ -68,13 +68,14 @@ fn add_attack_anims(atlas: &mut TextureAtlas, curr_y: f32, size: usize) {
     let curr_y = curr_y as i32;
     let mut iteration = 0;
     'outer: for y in (curr_y..(curr_y * 4 * size as i32)).step_by(size) {
-        println!("y: {y}");
         for x in (0..(4 * size)).step_by(size) {
-            println!("x: {x}");
-            atlas.add_texture(Rect {
-                min: Vec2::new(x as f32, y as f32),
-                max: Vec2::new((x + size) as f32, (y + size as i32) as f32),
+            let min = Vec2::new(x as f32, y as f32);
+            let max = Vec2::new((x + size) as f32, (y + size as i32) as f32);
+            let index = atlas.add_texture(Rect {
+                min,
+                max,
             });
+            println!("{index}");
         }
         iteration += 1;
         if iteration >= 4 {
@@ -93,7 +94,6 @@ pub fn player_attacking(
             return;
         }
         if keyboard_input.pressed(KeyCode::Space) {
-        println!("Start: {entity:?}");
             event_writer.send(WantsToAttack { attacker: entity });
         }
     }
