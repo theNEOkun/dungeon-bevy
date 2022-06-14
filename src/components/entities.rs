@@ -21,6 +21,9 @@ pub struct Animations {
     pub attacking: Animated,
 }
 
+#[derive(Component)]
+pub struct AttackAnim;
+
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
 

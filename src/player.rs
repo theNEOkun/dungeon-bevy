@@ -51,7 +51,7 @@ pub fn spawn_player(
                 counter: 0,
             },
             attacking: Animated {
-                timer: Timer::from_seconds(0.01, true),
+                timer: Timer::from_seconds(0.5, true),
                 offset: 5,
                 length: 3,
                 counter: 0,
@@ -62,6 +62,7 @@ pub fn spawn_player(
 }
 
 pub fn player_attacking(
+    mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     mut player: Query<
         (
@@ -69,7 +70,7 @@ pub fn player_attacking(
             &mut Transform,
             &Visibility,
         ),
-        With<Player>,
+        (With<Player>, Without<AttackAnim>),
     >,
     mut event_writer: EventWriter<WantsToAttack>,
 ) {
@@ -81,6 +82,7 @@ pub fn player_attacking(
             event_writer.send(WantsToAttack {
                 attacker: entity,
             });
+            commands.entity(entity).insert(AttackAnim);
         }
     }
 }
@@ -95,7 +97,7 @@ pub fn player_movement(
             &mut TextureAtlasSprite,
             &Visibility,
         ),
-        With<Player>,
+        (With<Player>, Without<AttackAnim>),
     >,
     mut event_writer: EventWriter<WantsToMove>,
 ) {
