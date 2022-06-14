@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use bevy::sprite::Rect;
 
 pub struct PlayerPlugin;
 
@@ -22,7 +23,8 @@ pub fn spawn_player(
 ) {
     let player_start = options.player_start;
     let texture = asset_server.load("textures/character.png");
-    let texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(16.0, 32.0), 16, 8);
+    let mut texture_atlas = TextureAtlas::from_grid(texture, Vec2::new(16.0, 32.0), 16, 4);
+    add_attack_anims(&mut texture_atlas, 4.0 * 32.0);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
     commands
         .spawn_bundle(SpriteSheetBundle {
@@ -52,8 +54,8 @@ pub fn spawn_player(
             },
             attacking: Animated {
                 timer: Timer::from_seconds(0.5, true),
-                offset: 5,
-                length: 3,
+                offset: (16 * 4),
+                length: 4,
                 counter: 0,
             },
         })
@@ -61,17 +63,22 @@ pub fn spawn_player(
     commands.spawn_bundle(new_camera_2d());
 }
 
+fn add_attack_anims(atlas: &mut TextureAtlas, curr_y: f32) {
+    let curr_y = curr_y as i32;
+    for y in (curr_y..(curr_y * 4 * 32)).step_by(32) {
+        for x in (0..(4 * 32)).step_by(32) {
+            atlas.add_texture(Rect {
+                min: Vec2::new(x as f32, y as f32),
+                max: Vec2::new((x + 32) as f32, (y + 32) as f32),
+            });
+        }
+    }
+}
+
 pub fn player_attacking(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
-    mut player: Query<
-        (
-            Entity,
-            &mut Transform,
-            &Visibility,
-        ),
-        (With<Player>, Without<AttackAnim>),
-    >,
+    mut player: Query<(Entity, &mut Transform, &Visibility), (With<Player>, Without<AttackAnim>)>,
     mut event_writer: EventWriter<WantsToAttack>,
 ) {
     for (entity, _, visible) in player.iter_mut() {
@@ -79,9 +86,7 @@ pub fn player_attacking(
             return;
         }
         if keyboard_input.just_pressed(KeyCode::Space) {
-            event_writer.send(WantsToAttack {
-                attacker: entity,
-            });
+            event_writer.send(WantsToAttack { attacker: entity });
             commands.entity(entity).insert(AttackAnim);
         }
     }
