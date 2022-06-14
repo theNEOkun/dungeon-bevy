@@ -8,6 +8,9 @@ pub struct Player;
 pub struct Enemy;
 
 #[derive(Component)]
+pub struct Living;
+
+#[derive(Component)]
 pub struct Animated {
     pub timer: Timer,
     pub offset: usize,

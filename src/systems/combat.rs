@@ -30,3 +30,17 @@ pub fn attack_animation(
         }
     }
 }
+
+pub fn attack(
+    mut commands: Commands,
+    player: Query<Entity, With<Living>>,
+    mut event_reader: EventReader<WantsToAttack>,
+) {
+    for entity in player.iter() {
+        for each in event_reader.iter() {
+            if entity == each.attacker {
+                commands.entity(entity).insert(AttackAnim);
+            }
+        }
+    }
+}
