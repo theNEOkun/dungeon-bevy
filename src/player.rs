@@ -34,17 +34,17 @@ pub fn spawn_player(
                 custom_size: Some(Vec2::new(1.0, 2.0)),
                 ..default()
             },
-            transform: Transform {
-                translation: Vec3::new(player_start.x, player_start.y, 100.0),
-                scale: Vec3::new(1.0, 1.0, 1.0),
-                ..default()
-            },
+            transform: get_char(player_start),
             visibility: Visibility { is_visible: true },
             ..default()
-        })        
+        })
         .insert(RigidBody::Dynamic)
-        .insert(Collider::cuboid(1.0, 1.0))
-        .insert(player_start)
+        .with_children(|children| {
+            children.spawn().insert(Collider::capsule_y(0.1, 0.5));
+        })
+        .insert(GravityScale(0.0))
+        .insert(LockedAxes::ROTATION_LOCKED)
+        .insert(Sleeping::disabled())
         .insert(Player)
         .insert(AnimDirection::Down)
         .insert(Living)
@@ -61,9 +61,16 @@ pub fn spawn_player(
                 length: 4,
                 counter: 0,
             },
-        })
-        .insert(Collider);
+        });
     commands.spawn_bundle(new_camera_2d());
+}
+
+fn get_char(player_start: Position) -> Transform {
+    Transform {
+        translation: Vec3::new(player_start.x, player_start.y, 100.0),
+        scale: Vec3::new(1.0, 1.0, 1.0),
+        ..default()
+    }
 }
 
 fn add_attack_anims(atlas: &mut TextureAtlas, curr_y: f32, size: usize) {
@@ -73,10 +80,7 @@ fn add_attack_anims(atlas: &mut TextureAtlas, curr_y: f32, size: usize) {
         for x in (0..(4 * size)).step_by(size) {
             let min = Vec2::new(x as f32, y as f32);
             let max = Vec2::new((x + size) as f32, (y + size as i32) as f32);
-            let index = atlas.add_texture(Rect {
-                min,
-                max,
-            });
+            let index = atlas.add_texture(Rect { min, max });
             println!("{index}");
         }
         iteration += 1;
@@ -163,12 +167,12 @@ pub fn player_movement(
 /// Handles moving the camera along with the player
 pub fn camera_follows_player(
     mut cameras: Query<&mut Transform, With<Camera>>,
-    players: Query<&Position, With<Player>>,
+    players: Query<&Transform, (With<Player>, Without<Camera>)>,
 ) {
     for player in players.iter() {
         for mut camera in cameras.iter_mut() {
-            camera.translation.x = player.x;
-            camera.translation.y = player.y;
+            camera.translation.x = player.translation.x;
+            camera.translation.y = player.translation.y;
         }
     }
 }

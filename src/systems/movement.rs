@@ -1,22 +1,15 @@
 use crate::prelude::*;
 
 pub fn check_for_collisions(
-    mut player: Query<(Entity, &mut Position, &mut Transform), With<Collider>>,
+    mut player: Query<(Entity, &mut Transform), With<Living>>,
     mut event_reader: EventReader<WantsToMove>,
-    map: Res<MapBuilder>,
     time: Res<Time>,
 ) {
-    for (_, mut position, mut transform) in player.iter_mut() {
+    for (entity, mut transform) in player.iter_mut() {
         for each in event_reader.iter() {
-            let destination = Position::new(
-                position.x + each.destination.x * (time.delta_seconds() * 10.0),
-                position.y + each.destination.y * (time.delta_seconds() * 10.0),
-            );
-            if map.map.can_enter_tile_f(&destination) {
-                position.x = destination.x;
-                position.y = destination.y;
-                transform.translation.x = position.x;
-                transform.translation.y = position.y;
+            if each.entity == entity {
+                transform.translation.x += each.destination.x * time.delta_seconds();
+                transform.translation.y += each.destination.y * time.delta_seconds();
             }
         }
     }

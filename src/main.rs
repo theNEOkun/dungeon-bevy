@@ -51,7 +51,7 @@ pub enum Stages {
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)        
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(16.0))
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(16.0)) 
         .add_event::<CheckCollision>()
         .add_event::<WantsToMove>()
         .add_event::<WantsToAttack>()
