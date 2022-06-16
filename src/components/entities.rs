@@ -8,7 +8,17 @@ pub struct Player;
 pub struct Enemy;
 
 #[derive(Component)]
-pub struct Living;
+pub struct Living {
+    pub speed: f32,
+    pub hp: u8
+}
+
+impl Living {
+    /// Checks if hp is <= 0
+    pub fn is_dead(&self) -> bool {
+        self.hp <= 0
+    }
+}
 
 #[derive(Component)]
 pub struct Animated {

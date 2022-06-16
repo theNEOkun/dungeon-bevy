@@ -47,7 +47,10 @@ pub fn spawn_player(
         .insert(Sleeping::disabled())
         .insert(Player)
         .insert(AnimDirection::Down)
-        .insert(Living)
+        .insert(Living {
+            speed: 3.0,
+            hp: 8,
+        })
         .insert(Animations {
             walking: Animated {
                 timer: Timer::from_seconds(0.2, true),
