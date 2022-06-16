@@ -8,6 +8,7 @@ mod mapbuilder;
 mod prelude {
     pub use bevy::prelude::*;
     pub use rand::prelude::*;
+    pub use bevy_rapier2d::prelude::*;
 
     pub const SCREEN_WIDTH: f32 = 80.0;
     pub const SCREEN_HEIGHT: f32 = 50.0;
@@ -49,7 +50,8 @@ pub enum Stages {
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins)        
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(16.0))
         .add_event::<CheckCollision>()
         .add_event::<WantsToMove>()
         .add_event::<WantsToAttack>()

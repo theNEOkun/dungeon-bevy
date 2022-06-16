@@ -41,7 +41,9 @@ pub fn spawn_player(
             },
             visibility: Visibility { is_visible: true },
             ..default()
-        })
+        })        
+        .insert(RigidBody::Dynamic)
+        .insert(Collider::cuboid(1.0, 1.0))
         .insert(player_start)
         .insert(Player)
         .insert(AnimDirection::Down)

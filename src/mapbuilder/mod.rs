@@ -148,7 +148,9 @@ pub fn make_map(
             });
             sprite.insert(pos);
             if let Some(extra) = extra {
-                sprite.insert(extra);
+                sprite
+                    .insert(extra)
+                    .insert(Collider::cuboid(1.0, 1.0));
             }
         }
     }
