@@ -18,4 +18,6 @@ pub struct ProvidesDungeonMap;
 pub struct Carried(pub Entity);
 
 #[derive(Component)]
-pub struct Weapon;
+pub struct Weapon {
+    pub damage_frames: Vec<i32>,
+}

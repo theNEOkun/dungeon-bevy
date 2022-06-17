@@ -32,8 +32,35 @@ pub fn attack_animation(
     }
 }
 
-/// Handles the attacking
 pub fn attack(
+    mut commands: Commands,
+    attacker: Query<(Entity, &Animations, &Weapon, &Transform, &AnimDirection)>,
+    victim: Query<(Entity, &Transform), With<Living>>,
+) {
+    for (_, animation, weapon, position, direction) in attacker.iter() {
+        let animation = &animation.attacking;
+        if weapon.damage_frames[0] <= animation.counter as i32 && weapon.damage_frames[weapon.damage_frames.len() - 1] >= animation.counter as i32 {
+            let direction = match direction {
+                AnimDirection::Up => (0.0, 1.0),
+                AnimDirection::Down => (0.0, -1.0),
+                AnimDirection::Left => (1.0, 0.0),
+                AnimDirection::Right => (-1.0, 0.0),
+            };
+            let mut new_pos = position.translation;
+            new_pos.x += direction.0;
+            new_pos.y += direction.1;
+            for (_, transform) in victim.iter() {
+                if transform.translation == new_pos {
+
+                }
+            }
+            println!("Hello");
+        }
+    }
+}
+
+/// Handles the attacking
+pub fn on_attack(
     mut commands: Commands,
     player: Query<Entity, With<Living>>,
     mut event_reader: EventReader<WantsToAttack>,

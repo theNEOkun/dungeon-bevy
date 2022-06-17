@@ -40,7 +40,8 @@ pub fn spawn_player(
         })
         .insert(RigidBody::Dynamic)
         .with_children(|children| {
-            children.spawn().insert(Collider::capsule_y(0.1, 0.5));
+            children.spawn()
+                .insert(Collider::capsule_y(0.1, 0.5));
         })
         .insert(GravityScale(0.0))
         .insert(LockedAxes::ROTATION_LOCKED)
@@ -50,6 +51,9 @@ pub fn spawn_player(
         .insert(Living {
             speed: 3.0,
             hp: 8,
+        })
+        .insert(Weapon {
+            damage_frames: vec![1, 2],
         })
         .insert(Animations {
             walking: Animated {

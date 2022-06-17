@@ -16,6 +16,7 @@ impl Plugin for Systems {
         app.add_system_set(
             SystemSet::on_update(Stages::Start)
             .with_system(combat::attack_animation)
+            .with_system(combat::on_attack)
             .with_system(combat::attack)
         );
     }
