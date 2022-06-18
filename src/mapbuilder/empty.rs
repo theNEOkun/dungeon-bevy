@@ -8,23 +8,23 @@ impl MapArchitect for EmptyArchitect {
         let mut mb = MapBuilder{
             map: Map::new(),
             rooms: Vec::new(),
-            //monster_spawns: Vec::new(),
+            monster_spawns: Vec::new(),
             player_start: Position::zero(),
-            //amulet: Point::zero(),
+            //amulet: Position::zero(),
             //theme: super::themes::DungeonTheme::new(),
         };
 
         mb.fill(TileType::Floor);
         mb.player_start = Position::new(SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0);
         //mb.amulet = mb.find_most_distant();
-        //for _ in 0..50 {
-        //    mb.monster_spawns.push(
-        //        Point::new(
-        //            rng.range(1, SCREEN_WIDTH),
-        //            rng.range(1, SCREEN_WIDTH),
-        //        )
-        //    )
-        //}
+        for _ in 0..50 {
+            mb.monster_spawns.push(
+                Position::new(
+                    rng.gen_range(1..SCREEN_WIDTH as i32) as f32,
+                    rng.gen_range(1..SCREEN_WIDTH as i32) as f32,
+                )
+            )
+        }
         mb
     }
 }
