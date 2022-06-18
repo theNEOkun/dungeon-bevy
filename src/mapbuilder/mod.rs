@@ -64,10 +64,10 @@ impl MapBuilder {
     /// Builds the random corridors
     fn build_corridors(&mut self, rng: &mut ThreadRng) {
         let mut rooms = self.rooms.clone();
-        rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
+        rooms.sort_by(|a, b| a.center_int().x.cmp(&b.center_int().x));
         for (index, room) in rooms.iter().enumerate().skip(1) {
-            let prev = rooms[index - 1].center();
-            let new = room.center();
+            let prev = rooms[index - 1].center_int();
+            let new = room.center_int();
 
             if rng.gen_range(0..2) == 1 {
                 self.apply_horizontal_tunnel(prev.x, new.x, prev.y);
@@ -113,14 +113,13 @@ impl MapBuilder {
             .enumerate()
             .filter(|(idx, t)| {
                 **t == TileType::Floor
-                    && DistanceAlg::Pythagoras.distance2d(*start, idx_to_pos(*idx))
-                        > 10.0
+                    && DistanceAlg::Pythagoras.distance2d(*start, idx_to_pos(*idx)) > 10.0
             })
             .map(|(idx, _)| idx_to_pos(idx))
             .collect();
 
         let mut spawns = Vec::new();
-        for _ in 0 .. NUM_MONSTERS {
+        for _ in 0..NUM_MONSTERS {
             let target_index = rng.gen_range(0..spawnable_tiles.len());
             spawns.push(spawnable_tiles[target_index].clone());
             spawnable_tiles.remove(target_index);
@@ -174,13 +173,39 @@ pub fn make_map(
         });
         sprite.insert(pos);
         if let Some(_) = extra {
-            sprite
-                .insert(Collider::cuboid(0.4, 0.4))
-                .insert(Friction {
-                    coefficient: 0.0,
-                    ..default()
-                });
+            sprite.insert(Collider::cuboid(0.4, 0.4)).insert(Friction {
+                coefficient: 0.0,
+                ..default()
+            });
         }
+    }
+    let mut rng = thread_rng();
+    for each in &mb.monster_spawns {
+        let thing = match rng.gen_range(0..2) {
+            0 => b'g',
+            _ => b'o',
+        };
+        commands.spawn_bundle(SpriteSheetBundle {
+            sprite: TextureAtlasSprite {
+                index: thing as usize,
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },
+            transform: Transform::from_xyz(each.x, each.y, 100.0),
+            ..default()
+        })
+        .insert(RigidBody::Dynamic)
+        .with_children(|children| {
+            children.spawn()
+                .insert(Collider::capsule_y(0.1, 0.5));
+        })
+        .insert(GravityScale(0.0))
+        .insert(LockedAxes::ROTATION_LOCKED)
+        .insert(Living {
+            speed: 1.0,
+            current_hp: 1,
+            max_hp: 1,
+        });
     }
     options.player_start = mb.player_start;
     state.set(Stages::Start).unwrap();

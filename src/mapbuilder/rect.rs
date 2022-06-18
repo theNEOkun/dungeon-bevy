@@ -23,6 +23,10 @@ impl Rect {
         Position::new(((self.x1 + self.x2) / 2) as f32, ((self.y1 + self.y2) / 2) as f32)
     }
 
+    pub fn center_int(&self) -> PositionI {
+        PositionI::new((self.x1 + self.x2) / 2, (self.y1 + self.y2) / 2)
+    }
+
     /// Used to check if another rect intersects with this one
     pub fn intersect(&self, other: &Rect) -> bool {
         self.x1 <= other.x2 && self.x2 >= other.x1 && self.y1 <= other.y2 && self.y2 >= other.y1

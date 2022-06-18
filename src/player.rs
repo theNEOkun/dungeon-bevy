@@ -40,10 +40,13 @@ pub fn spawn_player(
         })
         .insert(RigidBody::Dynamic)
         .with_children(|children| {
-            children.spawn()
-                .insert(Collider::capsule_y(0.1, 0.5));
+            children.spawn().insert(Collider::capsule_y(0.1, 0.5));
         })
         .insert(GravityScale(0.0))
+        .insert(Damping {
+            linear_damping: 1.0,
+            angular_damping: 1.0,
+        })
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Sleeping::disabled())
         .insert(Player)
@@ -123,7 +126,7 @@ pub fn player_movement(
             &mut TextureAtlasSprite,
             &Visibility,
         ),
-        (With<Player>, With<Living>, Without<AttackAnim>),
+        (With<Player>, Without<AttackAnim>),
     >,
     mut event_writer: EventWriter<WantsToMove>,
 ) {

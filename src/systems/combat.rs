@@ -34,6 +34,7 @@ pub fn attack_animation(
 
 pub fn attack(
     mut commands: Commands,
+    rapier_context: Res<RapierContext>,
     attacker: Query<(Entity, &Animations, &Weapon, &Transform, &AnimDirection)>,
     victim: Query<(Entity, &Transform), With<Living>>,
 ) {
@@ -50,7 +51,9 @@ pub fn attack(
             new_pos.x += direction.0;
             new_pos.y += direction.1;
             for (enemy, transform) in victim.iter() {
-                if transform.translation == new_pos {
+                println!("{:?} && {new_pos:?}", transform.translation);
+                if transform.translation.x as i32 == new_pos.x as i32 && transform.translation.y as i32 == new_pos.y as i32 {
+                    println!("{:?} == {new_pos:?}", transform.translation);
                     commands.entity(enemy).insert(Attacked {
                         damage: weapon.damage,
                     });
@@ -69,7 +72,7 @@ pub fn after_attack(
         for _ in event.iter() {
             hp.current_hp -= attack.damage;
             if hp.is_dead() {
-                commands.entity(entity).despawn();
+                commands.entity(entity).despawn_recursive();
             }
         }
     }
@@ -78,7 +81,7 @@ pub fn after_attack(
 /// Handles the attacking
 pub fn on_attack(
     mut commands: Commands,
-    player: Query<Entity, With<Living>>,
+    player: Query<Entity, (With<Living>, With<TextureAtlasSprite>, With<Animations>)>,
     mut event_reader: EventReader<WantsToAttack>,
 ) {
     for entity in player.iter() {
