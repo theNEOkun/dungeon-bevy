@@ -145,21 +145,7 @@ pub fn player_movement(
         } else {
             Position::zero()
         };
-        let anim_dir = if destination.x != 0.0 {
-            if destination.x < 0.0 {
-                AnimDirection::Right
-            } else {
-                AnimDirection::Left
-            }
-        } else if destination.y != 0.0 {
-            if destination.y < 0.0 {
-                AnimDirection::Down
-            } else {
-                AnimDirection::Up
-            }
-        } else {
-            *direction
-        };
+        let anim_dir = AnimDirection::match_position_prev(destination, *direction);
         if !destination.is_zero() {
             let destination = destination.normalize();
             event_writer.send(WantsToMove {

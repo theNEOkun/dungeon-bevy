@@ -41,17 +41,11 @@ pub fn attack(
     for (_, animation, weapon, position, direction) in attacker.iter() {
         let animation = &animation.attacking;
         if weapon.damage_frames[0] <= animation.counter as i32 && weapon.damage_frames[weapon.damage_frames.len() - 1] >= animation.counter as i32 {
-            let direction = match direction {
-                AnimDirection::Up => (0.0, 1.0),
-                AnimDirection::Down => (0.0, -1.0),
-                AnimDirection::Left => (1.0, 0.0),
-                AnimDirection::Right => (-1.0, 0.0),
-            };
             let mut new_pos = position.translation;
+            let direction = direction.get_direction();
             new_pos.x += direction.0;
             new_pos.y += direction.1;
             for (enemy, transform) in victim.iter() {
-                println!("{:?} && {new_pos:?}", transform.translation);
                 if transform.translation.x as i32 == new_pos.x as i32 && transform.translation.y as i32 == new_pos.y as i32 {
                     println!("{:?} == {new_pos:?}", transform.translation);
                     commands.entity(enemy).insert(Attacked {
