@@ -36,23 +36,39 @@ pub fn attack(
     mut commands: Commands,
     rapier_context: Res<RapierContext>,
     attacker: Query<(Entity, &Animations, &Weapon, &Transform, &AnimDirection)>,
-    victim: Query<(Entity, &Transform), With<Living>>,
+    mut event: EventWriter<Attack>,
 ) {
-    for (_, animation, weapon, position, direction) in attacker.iter() {
+    let shape = Collider::ball(0.25);
+    let shape_rot = 0.0;
+    let groups = InteractionGroups::all();
+    let filter = None;
+
+    for (entity, animation, weapon, position, direction) in attacker.iter() {
         let animation = &animation.attacking;
-        if weapon.damage_frames[0] <= animation.counter as i32 && weapon.damage_frames[weapon.damage_frames.len() - 1] >= animation.counter as i32 {
+        if weapon.damage_frames[0] <= animation.counter as i32
+            && weapon.damage_frames[weapon.damage_frames.len() - 1] >= animation.counter as i32
+        {
             let mut new_pos = position.translation;
             let direction = direction.get_direction();
-            new_pos.x += direction.0;
-            new_pos.y += direction.1;
-            for (enemy, transform) in victim.iter() {
-                if transform.translation.x as i32 == new_pos.x as i32 && transform.translation.y as i32 == new_pos.y as i32 {
-                    println!("{:?} == {new_pos:?}", transform.translation);
-                    commands.entity(enemy).insert(Attacked {
+            new_pos.x += direction.0 * 0.9;
+            new_pos.y += direction.1 * 0.9;
+
+            rapier_context.intersections_with_shape(
+                new_pos.truncate(),
+                shape_rot,
+                &shape,
+                groups,
+                filter,
+                |victim| {
+                    commands.entity(victim).insert(Attacked {
                         damage: weapon.damage,
                     });
-                }
-            }
+                    true
+                },
+            );
+        }
+        if weapon.damage_frames[weapon.damage_frames.len() - 1] <= animation.counter as i32 {
+            event.send(Attack);
         }
     }
 }
@@ -63,11 +79,14 @@ pub fn after_attack(
     mut event: EventReader<Attack>,
 ) {
     for (entity, attack, mut hp) in targets.iter_mut() {
+        println!("{entity:?}");
         for _ in event.iter() {
             hp.current_hp -= attack.damage;
+            println!("{} {}", hp.max_hp, hp.current_hp);
             if hp.is_dead() {
                 commands.entity(entity).despawn_recursive();
             }
+            commands.entity(entity).remove::<Attacked>();
         }
     }
 }
