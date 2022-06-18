@@ -1,4 +1,5 @@
 mod position;
+mod distancealg;
 
 use crate::prelude::*;
 pub use position::*;
@@ -43,6 +44,15 @@ pub fn map_idx_f(point: &Position) -> usize {
 /// applies map_idx on a new point
 pub fn map_idx_int(x: i32, y: i32) -> usize {
     map_idx(&PositionI::new(x, y))
+}
+
+pub fn idx_to_pos(pos: usize) -> Position {
+    let x = pos % SCREEN_WIDTH as usize;
+    let y = pos / SCREEN_WIDTH as usize;
+    Position {
+        x: x as f32,
+        y: y as f32
+    }
 }
 
 impl Map {
