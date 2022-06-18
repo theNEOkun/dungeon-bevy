@@ -2,7 +2,6 @@ mod movement;
 mod combat;
 
 use crate::prelude::*;
-use bevy::core::FixedTimestep;
 
 pub struct Systems;
 
@@ -18,6 +17,7 @@ impl Plugin for Systems {
             .with_system(combat::attack_animation)
             .with_system(combat::on_attack)
             .with_system(combat::attack)
+            .with_system(combat::after_attack)
         );
     }
 }

@@ -50,9 +50,11 @@ pub fn spawn_player(
         .insert(AnimDirection::Down)
         .insert(Living {
             speed: 3.0,
-            hp: 8,
+            current_hp: 8,
+            max_hp: 8,
         })
         .insert(Weapon {
+            damage: 1,
             damage_frames: vec![1, 2],
         })
         .insert(Animations {

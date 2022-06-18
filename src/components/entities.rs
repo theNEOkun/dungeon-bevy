@@ -10,14 +10,20 @@ pub struct Enemy;
 #[derive(Component)]
 pub struct Living {
     pub speed: f32,
-    pub hp: u8
+    pub current_hp: u8,
+    pub max_hp: u8
 }
 
 impl Living {
     /// Checks if hp is <= 0
     pub fn is_dead(&self) -> bool {
-        self.hp <= 0
+        self.current_hp <= 0
     }
+}
+
+#[derive(Component)]
+pub struct Attacked {
+    pub damage: u8,
 }
 
 #[derive(Component)]
@@ -46,12 +52,6 @@ pub struct MapLevel(pub i32);
 
 #[derive(Component)]
 pub struct MovingRandomly;
-
-#[derive(Component)]
-pub struct Health {
-    pub current: i32,
-    pub max: i32,
-}
 
 #[derive(Component)]
 pub struct ChasingPlayer;

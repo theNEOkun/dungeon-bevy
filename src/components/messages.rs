@@ -12,6 +12,9 @@ pub struct WantsToAttack {
     //pub victim: Entity,
 }
 
+#[derive(Component)]
+pub struct Attack;
+
 pub struct CheckCollision {
     pub entity: Entity,
     pub destination: Position,

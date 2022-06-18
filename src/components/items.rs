@@ -19,5 +19,6 @@ pub struct Carried(pub Entity);
 
 #[derive(Component)]
 pub struct Weapon {
+    pub damage: u8,
     pub damage_frames: Vec<i32>,
 }

@@ -57,6 +57,7 @@ fn main() {
         .add_event::<WantsToMove>()
         .add_event::<WantsToAttack>()
         .add_event::<Animate>()
+        .add_event::<Attack>()
         .insert_resource(GameOptions{ player_start: Position::zero() })
         .insert_resource(
             WindowDescriptor {

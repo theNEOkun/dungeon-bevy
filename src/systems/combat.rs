@@ -11,6 +11,7 @@ pub fn attack_animation(
         Option<&mut AttackAnim>,
     )>,
     time: Res<Time>,
+    mut event: EventWriter<Attack>,
 ) {
     for (entity, mut sprite, mut animated, direction, anim) in player.iter_mut() {
         if let Some(_) = anim {
@@ -26,6 +27,7 @@ pub fn attack_animation(
                     animated.counter = 0;
                     commands.entity(entity).remove::<AttackAnim>();
                     sprite.custom_size = Some(Vec2::new(1.0, 2.0));
+                    event.send(Attack {});
                 }
             }
         }
@@ -49,12 +51,28 @@ pub fn attack(
             let mut new_pos = position.translation;
             new_pos.x += direction.0;
             new_pos.y += direction.1;
-            for (_, transform) in victim.iter() {
+            for (enemy, transform) in victim.iter() {
                 if transform.translation == new_pos {
-
+                    commands.entity(enemy).insert(Attacked {
+                        damage: weapon.damage,
+                    });
                 }
             }
-            println!("Hello");
+        }
+    }
+}
+
+pub fn after_attack(
+    mut commands: Commands,
+    mut targets: Query<(Entity, &mut Attacked, &mut Living)>,
+    mut event: EventReader<Attack>,
+) {
+    for (entity, attack, mut hp) in targets.iter_mut() {
+        for _ in event.iter() {
+            hp.current_hp -= attack.damage;
+            if hp.is_dead() {
+                commands.entity(entity).despawn();
+            }
         }
     }
 }

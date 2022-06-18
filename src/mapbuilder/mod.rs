@@ -3,7 +3,6 @@ mod rect;
 mod rooms;
 
 use crate::prelude::*;
-use bevy::asset::LoadState;
 use rect::Rect;
 
 use empty::EmptyArchitect;
@@ -150,7 +149,7 @@ pub fn make_map(
         sprite.insert(pos);
         if let Some(_) = extra {
             sprite
-                .insert(Collider::cuboid(0.5, 0.5))
+                .insert(Collider::cuboid(0.4, 0.4))
                 .insert(Friction {
                     coefficient: 0.0,
                     ..default()
