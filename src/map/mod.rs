@@ -3,6 +3,7 @@ mod distancealg;
 
 use crate::prelude::*;
 pub use position::*;
+pub use distancealg::DistanceAlg;
 
 const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
 

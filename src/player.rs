@@ -89,8 +89,7 @@ fn add_attack_anims(atlas: &mut TextureAtlas, curr_y: f32, size: usize) {
         for x in (0..(4 * size)).step_by(size) {
             let min = Vec2::new(x as f32, y as f32);
             let max = Vec2::new((x + size) as f32, (y + size as i32) as f32);
-            let index = atlas.add_texture(Rect { min, max });
-            println!("{index}");
+            atlas.add_texture(Rect { min, max });
         }
         iteration += 1;
         if iteration >= 4 {

@@ -18,6 +18,7 @@ pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
     pub player_start: Position,
+    pub monster_spawns: Vec<Position>,
 }
 
 impl MapBuilder {
@@ -100,6 +101,31 @@ impl MapBuilder {
                 self.map[&idx] = TileType::Floor;
             }
         }
+    }
+
+    /// Method used to spawn monsters
+    fn spawn_monsters(&self, start: &Position, rng: &mut ThreadRng) -> Vec<Position> {
+        const NUM_MONSTERS: usize = 50;
+        let mut spawnable_tiles: Vec<Position> = self
+            .map
+            .tiles
+            .iter()
+            .enumerate()
+            .filter(|(idx, t)| {
+                **t == TileType::Floor
+                    && DistanceAlg::Pythagoras.distance2d(*start, idx_to_pos(*idx))
+                        > 10.0
+            })
+            .map(|(idx, _)| idx_to_pos(idx))
+            .collect();
+
+        let mut spawns = Vec::new();
+        for _ in 0 .. NUM_MONSTERS {
+            let target_index = rng.gen_range(0..spawnable_tiles.len());
+            spawns.push(spawnable_tiles[target_index].clone());
+            spawnable_tiles.remove(target_index);
+        }
+        spawns
     }
 }
 

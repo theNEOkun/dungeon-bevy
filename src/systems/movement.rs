@@ -27,6 +27,7 @@ pub fn walking_animation(
 ) {
     for (_, mut sprite, mut animated, direction) in player.iter_mut() {
         for _ in event_reader.iter() {
+            sprite.custom_size = Some(Vec2::new(1.0, 2.0));
             let animated = &mut animated.walking;
             animated.timer.tick(time.delta());
             if animated.timer.finished() {
