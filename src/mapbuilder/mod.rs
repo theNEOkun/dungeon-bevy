@@ -185,7 +185,8 @@ pub fn make_map(
             0 => b'g',
             _ => b'o',
         };
-        commands.spawn_bundle(SpriteSheetBundle {
+        commands.spawn_bundle(
+            SpriteSheetBundle {
             texture_atlas: texture_atlas_handle.clone(),
             sprite: TextureAtlasSprite {
                 index: thing as usize,
@@ -195,18 +196,14 @@ pub fn make_map(
             transform: Transform::from_xyz(each.x, each.y, 100.0),
             ..default()
         })
-        .insert(RigidBody::Dynamic)
-        .with_children(|children| {
-            children.spawn()
-                .insert(Collider::capsule_y(0.1, 0.5));
-        })
-        .insert(GravityScale(0.0))
-        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Living {
             speed: 1.0,
             current_hp: 1,
             max_hp: 1,
-        });
+        })
+        .insert(RigidBody::Dynamic).insert(Collider::capsule_y(0.1, 0.5))
+        .insert(GravityScale(0.0))
+        .insert(LockedAxes::ROTATION_LOCKED);
     }
     options.player_start = mb.player_start;
     state.set(Stages::Start).unwrap();

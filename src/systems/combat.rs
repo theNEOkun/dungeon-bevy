@@ -78,10 +78,8 @@ pub fn after_attack(
     mut event: EventReader<Attack>,
 ) {
     for (entity, attack, mut hp) in targets.iter_mut() {
-        println!("Entity {entity:?}");
         for _ in event.iter() {
             hp.current_hp -= attack.damage;
-            println!("{} {}", hp.max_hp, hp.current_hp);
             if hp.is_dead() {
                 commands.entity(entity).despawn_recursive();
             }
