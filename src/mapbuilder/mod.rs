@@ -14,6 +14,7 @@ trait MapArchitect {
     fn new(&mut self, rng: &mut ThreadRng) -> MapBuilder;
 }
 
+/// Struct that holds the map_building-information
 pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,

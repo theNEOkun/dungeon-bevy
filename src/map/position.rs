@@ -50,6 +50,10 @@ impl Position {
         (&self.x, &self.y)
     }
 
+    pub fn integer_position(&self) -> (i32, i32) {
+        (self.x.round() as i32, self.y.round() as i32)
+    }
+
     pub fn is_zero(&self) -> bool {
         self.x == 0.0 && self.y == 0.0
     }
