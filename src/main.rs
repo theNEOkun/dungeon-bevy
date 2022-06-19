@@ -5,6 +5,7 @@ mod mapbuilder;
 mod player;
 mod systems;
 mod animdirection;
+mod pathfinding;
 
 mod prelude {
     pub use bevy::prelude::*;

@@ -132,10 +132,10 @@ impl Map {
     /// @param loc is the current position
     /// @param delta is the position to walk to
     /// @return Either Some(index) else None
-    fn valid_exit(&self, loc: PositionI, delta: PositionI) -> Option<usize> {
+    fn valid_exit(&self, loc: Position, delta: Position) -> Option<usize> {
         let destination = loc + delta;
-        if self.in_bounds(&destination) {
-            if self.can_enter_tile(&destination) {
+        if self.in_bounds_f(&destination) {
+            if self.can_enter_tile_f(&destination) {
                 let idx = self.point_to_index(&destination);
                 Some(idx)
             } else {
@@ -146,14 +146,36 @@ impl Map {
         }
     }
 
-    pub fn point_to_index(&self, pos: &PositionI) -> usize {
-        ((pos.y * SCREEN_WIDTH as i32) + pos.x) as usize
+    pub fn point_to_index(&self, pos: &Position) -> usize {
+        ((pos.y * SCREEN_WIDTH) + pos.x) as usize
     }
 
-    pub fn index_to_point(&self, index: usize) -> PositionI {
+    pub fn index_to_point(&self, index: usize) -> Position {
         let x = index % SCREEN_WIDTH as usize;
         let y = index / SCREEN_WIDTH as usize;
-        PositionI::new(x as i32, y as i32)
+        Position::new(x as f32, y as f32)
+    }
+}
+
+impl Map {
+    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+        let mut exits = Vec::new();
+        let location = self.index_to_point(idx);
+
+        if let Some(idx) = self.valid_exit(location, Position::new(-1.0, 0.0)) {
+            exits.push((idx, 1.0))
+        }
+        if let Some(idx) = self.valid_exit(location, Position::new(1.0, 0.0)) {
+            exits.push((idx, 1.0))
+        }
+        if let Some(idx) = self.valid_exit(location, Position::new(0.0, -1.0)) {
+            exits.push((idx, 1.0))
+        }
+        if let Some(idx) = self.valid_exit(location, Position::new(0.0, 1.0)) {
+            exits.push((idx, 1.0))
+        }
+
+        exits
     }
 }
 
