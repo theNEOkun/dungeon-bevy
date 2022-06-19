@@ -186,6 +186,7 @@ pub fn make_map(
             _ => b'o',
         };
         commands.spawn_bundle(SpriteSheetBundle {
+            texture_atlas: texture_atlas_handle.clone(),
             sprite: TextureAtlasSprite {
                 index: thing as usize,
                 custom_size: Some(Vec2::new(1.0, 1.0)),

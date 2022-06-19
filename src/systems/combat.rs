@@ -36,7 +36,6 @@ pub fn attack(
     mut commands: Commands,
     rapier_context: Res<RapierContext>,
     attacker: Query<(Entity, &Animations, &Weapon, &Transform, &AnimDirection)>,
-    mut event: EventWriter<Attack>,
 ) {
     let shape = Collider::ball(0.25);
     let shape_rot = 0.0;
@@ -52,6 +51,7 @@ pub fn attack(
             let direction = direction.get_direction();
             new_pos.x += direction.0 * 0.9;
             new_pos.y += direction.1 * 0.9;
+            let entity = commands.entity(entity).id();
 
             rapier_context.intersections_with_shape(
                 new_pos.truncate(),
@@ -60,15 +60,14 @@ pub fn attack(
                 groups,
                 filter,
                 |victim| {
-                    commands.entity(victim).insert(Attacked {
-                        damage: weapon.damage,
-                    });
+                    if victim != entity {
+                        commands.entity(victim).insert(Attacked {
+                            damage: weapon.damage,
+                        });
+                    }
                     true
                 },
             );
-        }
-        if weapon.damage_frames[weapon.damage_frames.len() - 1] <= animation.counter as i32 {
-            event.send(Attack);
         }
     }
 }
@@ -79,7 +78,7 @@ pub fn after_attack(
     mut event: EventReader<Attack>,
 ) {
     for (entity, attack, mut hp) in targets.iter_mut() {
-        println!("{entity:?}");
+        println!("Entity {entity:?}");
         for _ in event.iter() {
             hp.current_hp -= attack.damage;
             println!("{} {}", hp.max_hp, hp.current_hp);
