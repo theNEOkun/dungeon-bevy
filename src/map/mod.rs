@@ -1,5 +1,6 @@
 mod position;
 mod distancealg;
+mod dijkstra;
 
 use crate::prelude::*;
 pub use position::*;
@@ -18,6 +19,17 @@ impl std::fmt::Debug for TileType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self)
     }
+}
+
+pub struct Error;
+
+type Result<T> = std::result::Result<T, Error>;
+
+pub trait DijkstraMap {
+    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)>;
+
+    fn get_neighbours(&self, position: usize) -> Vec<Result<usize>>;
+
 }
 
 /// Holds the Map
@@ -157,7 +169,7 @@ impl Map {
     }
 }
 
-impl Map {
+impl DijkstraMap for Map {
     fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
         let mut exits = Vec::new();
         let location = self.index_to_point(idx);
@@ -176,6 +188,30 @@ impl Map {
         }
 
         exits
+    }
+
+    fn get_neighbours(&self, position: usize) -> Vec<Result<usize>> {
+        let mut arr: Vec<Result<usize>> = Vec::new();
+
+        let position = self.index_to_point(position);
+
+        let test_x = position.x;
+        let test_y = position.y;
+
+        if (test_x + 1.0) < SCREEN_HEIGHT {
+            arr.push(Ok(self.point_to_index(&Position::new(position.x + 1.0, position.y))));
+        }
+        if (test_x - 1.0) > 0.0 {
+            arr.push(Ok(self.point_to_index(&Position::new(position.x - 1.0, position.y))));
+        }
+        if (test_y + 1.0) < SCREEN_WIDTH {
+            arr.push(Ok(self.point_to_index(&Position::new(position.x, position.y + 1.0))));
+        }
+        if (test_y - 1.0) > 0.0 {
+            arr.push(Ok(self.point_to_index(&Position::new(position.x, position.y - 1.0))));
+        }
+
+        arr
     }
 }
 
