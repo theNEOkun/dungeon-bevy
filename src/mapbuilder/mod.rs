@@ -114,7 +114,7 @@ impl MapBuilder {
             .enumerate()
             .filter(|(idx, t)| {
                 **t == TileType::Floor
-                    && DistanceAlg::Pythagoras.distance2d(*start, idx_to_pos(*idx)) > 10.0
+                    && Distance::Pythagoras.distance2d(*start, idx_to_pos(*idx)) > 10.0
             })
             .map(|(idx, _)| idx_to_pos(idx))
             .collect();

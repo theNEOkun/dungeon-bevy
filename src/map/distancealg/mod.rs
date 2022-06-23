@@ -2,12 +2,12 @@ use super::Position;
 
 use std::cmp::{max, min};
 
-pub enum DistanceAlg {
+pub enum Distance {
     Pythagoras,
     PythagorasSquared,
 }
 
-impl DistanceAlg {
+impl Distance {
     pub fn distance2d(self, start: Position, end: Position) -> f32 {
         let start = (start.x as i32, start.y as i32);
         let end = (end.x as i32, end.y as i32);

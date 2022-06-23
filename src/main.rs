@@ -5,12 +5,12 @@ mod mapbuilder;
 mod player;
 mod systems;
 mod animdirection;
-mod pathfinding;
 
 mod prelude {
     pub use bevy::prelude::*;
     pub use bevy_rapier2d::prelude::*;
     pub use rand::prelude::*;
+    pub use bracket_lib::prelude::*;
 
     pub const SCREEN_WIDTH: f32 = 80.0;
     pub const SCREEN_HEIGHT: f32 = 50.0;

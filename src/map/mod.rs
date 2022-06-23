@@ -1,10 +1,9 @@
 mod position;
 mod distancealg;
-mod dijkstra;
 
 use crate::prelude::*;
 pub use position::*;
-pub use distancealg::DistanceAlg;
+pub use distancealg::Distance;
 
 const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
 
@@ -167,28 +166,6 @@ impl Map {
         let y = index / SCREEN_WIDTH as usize;
         Position::new(x as f32, y as f32)
     }
-}
-
-impl DijkstraMap for Map {
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
-        let mut exits = Vec::new();
-        let location = self.index_to_point(idx);
-
-        if let Some(idx) = self.valid_exit(location, Position::new(-1.0, 0.0)) {
-            exits.push((idx, 1.0))
-        }
-        if let Some(idx) = self.valid_exit(location, Position::new(1.0, 0.0)) {
-            exits.push((idx, 1.0))
-        }
-        if let Some(idx) = self.valid_exit(location, Position::new(0.0, -1.0)) {
-            exits.push((idx, 1.0))
-        }
-        if let Some(idx) = self.valid_exit(location, Position::new(0.0, 1.0)) {
-            exits.push((idx, 1.0))
-        }
-
-        exits
-    }
 
     fn get_neighbours(&self, position: usize) -> Vec<Result<usize>> {
         let mut arr: Vec<Result<usize>> = Vec::new();
@@ -212,6 +189,35 @@ impl DijkstraMap for Map {
         }
 
         arr
+    }
+}
+
+impl BaseMap for Map {
+    fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
+        let mut exits = SmallVec::new();
+        let location = self.index_to_point(idx);
+
+        if let Some(idx) = self.valid_exit(location, Position::new(-1.0, 0.0)) {
+            exits.push((idx, 1.0))
+        }
+        if let Some(idx) = self.valid_exit(location, Position::new(1.0, 0.0)) {
+            exits.push((idx, 1.0))
+        }
+        if let Some(idx) = self.valid_exit(location, Position::new(0.0, -1.0)) {
+            exits.push((idx, 1.0))
+        }
+        if let Some(idx) = self.valid_exit(location, Position::new(0.0, 1.0)) {
+            exits.push((idx, 1.0))
+        }
+
+        exits
+    }
+
+    fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
+        Distance::Pythagoras.distance2d(
+            self.index_to_point(idx1),
+            self.index_to_point(idx2)
+        )
     }
 }
 
