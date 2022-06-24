@@ -37,6 +37,13 @@ impl Position {
         }
     }
 
+    pub fn from_transform(pos: Transform) -> Self {
+        Self {
+            x: pos.translation.x,
+            y: pos.translation.y,
+        }
+    }
+
     pub fn zero() -> Self {
         Self::new(0.0, 0.0)
     }

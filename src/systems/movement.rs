@@ -47,7 +47,7 @@ fn point_to_index(trans: Transform) -> usize {
 
 pub fn chasing(
     mut commands: Commands,
-    mut enemies: Query<(Entity, &mut Transform), With<Enemy>>,
+    mut enemies: Query<(Entity, &mut Transform), (With<Enemy>, With<ChasingPlayer>)>,
     mut player: Query<(Entity, &mut Transform), With<Player>>,
     map: Res<MapBuilder>,
 ) {
@@ -60,7 +60,19 @@ pub fn chasing(
         let idx = point_to_index(*e_position);
 
         if let Some(destination)= DijkstraMap::find_lowest_exit(&dijkstra_map, idx, map) {
+            let distance = Distance::Pythagoras.distance2d_transform(*e_position, *target);
 
+            let destination = if distance > 1.2 {
+                map.index_to_point(destination)
+            } else {
+                Position::from_transform(*target)
+            };
+
+            let mut attacked = false;
+
+            if Position::from_transform(*target) == destination {
+
+            }
         }
     }
 }
