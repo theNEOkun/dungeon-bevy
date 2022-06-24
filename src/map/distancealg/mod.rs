@@ -1,4 +1,5 @@
 use super::Position;
+use crate::prelude::*;
 
 use std::cmp::{max, min};
 
@@ -11,6 +12,15 @@ impl Distance {
     pub fn distance2d(self, start: Position, end: Position) -> f32 {
         let start = (start.x as i32, start.y as i32);
         let end = (end.x as i32, end.y as i32);
+        match self {
+            Self::Pythagoras => distance2d_pythagoras(start, end),
+            Self::PythagorasSquared => distance2d_pythagoras_squared(start, end),
+        }
+    }
+
+    pub fn distance2d_transform(self, start: Transform, end: Transform) -> f32 {
+        let start = (start.translation.x as i32, start.translation.y as i32);
+        let end = (end.translation.x as i32, end.translation.y as i32);
         match self {
             Self::Pythagoras => distance2d_pythagoras(start, end),
             Self::PythagorasSquared => distance2d_pythagoras_squared(start, end),
