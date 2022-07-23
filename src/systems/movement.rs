@@ -58,12 +58,15 @@ pub fn chasing(
         let map = &map.map;
 
         let e_index = point_to_index(*e_position);
+        let e_target = point_to_index(*target);
 
         let result = astar(
             &e_index,
             |p| map.get_neighbours(*p),
-            |p| map.get_pathing_distance(*p),
+            |p| map.get_pathing_distance(*p, e_target) as u32,
             |p| point_to_index(*target) == *p
         );
+
+        println!("{result}");
     }
 }

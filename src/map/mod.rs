@@ -171,8 +171,8 @@ impl Map {
     ///
     /// @param position is the position to get the neighbours of
     /// @return a vec of results of all the neighbours position
-    pub fn get_neighbours(&self, position: usize) -> Vec<Result<usize>> {
-        let mut arr: Vec<Result<usize>> = Vec::new();
+    pub fn get_neighbours(&self, position: usize) -> Vec<(usize, u32)> {
+        let mut arr: Vec<(usize, u32)> = Vec::new();
 
         let position = self.index_to_point(position);
 
@@ -180,16 +180,16 @@ impl Map {
         let test_y = position.y;
 
         if (test_x + 1.0) < SCREEN_HEIGHT {
-            arr.push(Ok(self.point_to_index(&Position::new(position.x + 1.0, position.y))));
+            arr.push((self.point_to_index(&Position::new(position.x + 1.0, position.y)), 1));
         }
         if (test_x - 1.0) > 0.0 {
-            arr.push(Ok(self.point_to_index(&Position::new(position.x - 1.0, position.y))));
+            arr.push((self.point_to_index(&Position::new(position.x - 1.0, position.y)), 1));
         }
         if (test_y + 1.0) < SCREEN_WIDTH {
-            arr.push(Ok(self.point_to_index(&Position::new(position.x, position.y + 1.0))));
+            arr.push((self.point_to_index(&Position::new(position.x, position.y + 1.0)), 1));
         }
         if (test_y - 1.0) > 0.0 {
-            arr.push(Ok(self.point_to_index(&Position::new(position.x, position.y - 1.0))));
+            arr.push((self.point_to_index(&Position::new(position.x, position.y - 1.0)), 1));
         }
 
         arr
@@ -215,11 +215,11 @@ impl Map {
         exits
     }
 
-    pub fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
+    pub fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> usize {
         Distance::Pythagoras.distance2d(
             self.index_to_point(idx1),
             self.index_to_point(idx2)
-        )
+        ).round() as usize
     }
 }
 
