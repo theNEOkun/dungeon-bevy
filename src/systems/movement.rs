@@ -42,7 +42,7 @@ pub fn walking_animation(
 }
 
 fn point_to_index(trans: Transform) -> usize {
-    ((trans.translation.y / SCREEN_WIDTH) + trans.translation.x % SCREEN_WIDTH).round() as usize
+    ((trans.translation.y * SCREEN_WIDTH + SCREEN_WIDTH).round()) as usize
 }
 
 pub fn chasing(
@@ -56,38 +56,14 @@ pub fn chasing(
         let (_, target) = player.single_mut();
 
         let map = &map.map;
-        let dijkstra_map = DijkstraMap::new(SCREEN_WIDTH as usize, SCREEN_HEIGHT as usize, &[point_to_index(*target)], map, 1024.0);
 
-        let idx = point_to_index(*e_position);
+        let e_index = point_to_index(*e_position);
 
-        if let Some(destination)= DijkstraMap::find_lowest_exit(&dijkstra_map, idx, map) {
-            let distance = Distance::Pythagoras.distance2d_transform(*e_position, *target);
-
-            let destination = if distance > 1.2 {
-                map.index_to_point(destination)
-            } else {
-                Position::from_transform(*target)
-            };
-
-            let mut attacked = false;
-
-            if Position::from_transform(*target) == destination {
-                println!("TRUE {destination:?}");
-                event_writer_attack.send(
-                    WantsToAttack {
-                        attacker: e_entity,
-                    }
-                );
-                attacked = true;
-            }
-            if !attacked {
-                event_writer.send(
-                    WantsToMove {
-                        entity: e_entity,
-                        destination,
-                    }
-                )
-            }
-        }
+        let result = astar(
+            &e_index,
+            |p| map.get_neighbours(*p),
+            |p| map.get_pathing_distance(*p),
+            |p| point_to_index(*target) == *p
+        );
     }
 }

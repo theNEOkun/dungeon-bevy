@@ -171,7 +171,7 @@ impl Map {
     ///
     /// @param position is the position to get the neighbours of
     /// @return a vec of results of all the neighbours position
-    fn get_neighbours(&self, position: usize) -> Vec<Result<usize>> {
+    pub fn get_neighbours(&self, position: usize) -> Vec<Result<usize>> {
         let mut arr: Vec<Result<usize>> = Vec::new();
 
         let position = self.index_to_point(position);
@@ -194,11 +194,9 @@ impl Map {
 
         arr
     }
-}
 
-impl BaseMap for Map {
-    fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
-        let mut exits = SmallVec::new();
+    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+        let mut exits = Vec::new();
         let location = self.index_to_point(idx);
 
         if let Some(idx) = self.valid_exit(location, Position::new(-1.0, 0.0)) {
@@ -217,7 +215,7 @@ impl BaseMap for Map {
         exits
     }
 
-    fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
+    pub fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
         Distance::Pythagoras.distance2d(
             self.index_to_point(idx1),
             self.index_to_point(idx2)

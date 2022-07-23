@@ -9,7 +9,8 @@ edition = "2021"
 rand = "~0.8"
 bevy = { version = "~0.7", features = ["dynamic"] }
 bevy_rapier2d = "~0.14"
-bracket-lib = "~0.8"
+#bracket-lib = "~0.8"
+pathfinding = "~3.0"
 serde = "~1.0"
 ron = "~0.7"
 
