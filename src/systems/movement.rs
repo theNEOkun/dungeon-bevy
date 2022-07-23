@@ -5,8 +5,8 @@ pub fn check_for_collisions(
     mut event_reader: EventReader<WantsToMove>,
     time: Res<Time>,
 ) {
-    for (entity, mut transform, living) in player.iter_mut() {
-        for each in event_reader.iter() {
+    for each in event_reader.iter() {
+        for (entity, mut transform, living) in player.iter_mut() {
             if each.entity == entity {
                 transform.translation.x += each.destination.x * living.speed * time.delta_seconds();
                 transform.translation.y += each.destination.y * living.speed * time.delta_seconds();
@@ -25,8 +25,8 @@ pub fn walking_animation(
     mut event_reader: EventReader<WantsToMove>,
     time: Res<Time>,
 ) {
-    for (entity, mut sprite, mut animated, direction) in player.iter_mut() {
-        for each in event_reader.iter() {
+    for each in event_reader.iter() {
+        for (entity, mut sprite, mut animated, direction) in player.iter_mut() {
             if each.entity == entity {
                 sprite.custom_size = Some(Vec2::new(1.0, 2.0));
                 let animated = &mut animated.walking;
@@ -46,12 +46,13 @@ fn point_to_index(trans: Transform) -> usize {
 }
 
 pub fn chasing(
-    mut commands: Commands,
-    mut enemies: Query<(Entity, &mut Transform), (With<Enemy>, With<ChasingPlayer>)>,
-    mut player: Query<(Entity, &mut Transform), With<Player>>,
+    enemies: Query<(Entity, &mut Transform), (With<Enemy>, With<ChasingPlayer>)>,
+    mut player: Query<(Entity, &mut Transform), (With<Player>, Without<Enemy>)>,
+    mut event_writer: EventWriter<WantsToMove>,
+    mut event_writer_attack: EventWriter<WantsToAttack>,
     map: Res<MapBuilder>,
 ) {
-    for (_, e_position) in enemies.iter() {
+    for (e_entity, e_position) in enemies.iter() {
         let (_, target) = player.single_mut();
 
         let map = &map.map;
@@ -71,7 +72,21 @@ pub fn chasing(
             let mut attacked = false;
 
             if Position::from_transform(*target) == destination {
-
+                println!("TRUE {destination:?}");
+                event_writer_attack.send(
+                    WantsToAttack {
+                        attacker: e_entity,
+                    }
+                );
+                attacked = true;
+            }
+            if !attacked {
+                event_writer.send(
+                    WantsToMove {
+                        entity: e_entity,
+                        destination,
+                    }
+                )
             }
         }
     }

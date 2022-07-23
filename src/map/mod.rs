@@ -166,7 +166,11 @@ impl Map {
         let y = index / SCREEN_WIDTH as usize;
         Position::new(x as f32, y as f32)
     }
-
+    
+    /// used to get the neighbours of a given cell
+    ///
+    /// @param position is the position to get the neighbours of
+    /// @return a vec of results of all the neighbours position
     fn get_neighbours(&self, position: usize) -> Vec<Result<usize>> {
         let mut arr: Vec<Result<usize>> = Vec::new();
 

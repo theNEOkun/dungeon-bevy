@@ -145,7 +145,8 @@ pub fn player_movement(
         let anim_dir = AnimDirection::match_position_prev(destination, *direction);
         if !destination.is_zero() {
             let destination = destination.normalize();
-            event_writer.send(WantsToMove {
+            event_writer.send(
+                WantsToMove {
                 entity,
                 destination,
             });

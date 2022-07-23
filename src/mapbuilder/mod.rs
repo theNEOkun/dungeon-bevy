@@ -202,6 +202,9 @@ pub fn make_map(
             current_hp: 1,
             max_hp: 1,
         })
+        .insert(ChasingPlayer)
+        .insert(AnimDirection::Down)
+        .insert(Enemy)
         .insert(RigidBody::Dynamic).insert(Collider::capsule_y(0.1, 0.5))
         .insert(GravityScale(0.0))
         .insert(LockedAxes::ROTATION_LOCKED);
