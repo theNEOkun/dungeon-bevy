@@ -68,10 +68,20 @@ pub fn chasing(
 
         if let Some(result) = result {
             if result.1 > 1 {
-                let destination = (Position::from_index(result.0[1]) - Position::from_transform(*e_position)).normalize();
+                let move_to = Position::from_index(result.0[1]);
+                if move_to == *target {
+                    event_writer_attack.send(
+                        WantsToAttack {
+                            attacker: e_entity
+                        }
+                    )
+                } else {
+                let destination = (move_to - Position::from_transform(*e_position)).normalize();
                 commands
                     .entity(e_entity)
                     .insert(Movement { goal: destination });
+
+                }
             }
         }
     }

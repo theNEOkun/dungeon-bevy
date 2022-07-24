@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Component, PartialEq, Clone, Copy)]
+#[derive(Component, Clone, Copy)]
 pub struct Position {
     pub x: f32,
     pub y: f32,
@@ -80,6 +80,18 @@ impl Position {
             x: self.x / length,
             y: self.y / length
         }
+    }
+}
+
+impl std::cmp::PartialEq<Position> for Position {
+    fn eq(&self, other: &Position) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+
+impl std::cmp::PartialEq<Transform> for Position {
+    fn eq(&self, other: &Transform) -> bool {
+        self.x == other.translation.x && self.y == other.translation.y
     }
 }
 

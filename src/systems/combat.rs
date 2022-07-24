@@ -77,8 +77,8 @@ pub fn after_attack(
     mut targets: Query<(Entity, &mut Attacked, &mut Living)>,
     mut event: EventReader<Attack>,
 ) {
-    for (entity, attack, mut hp) in targets.iter_mut() {
-        for _ in event.iter() {
+    for _ in event.iter() {
+        for (entity, attack, mut hp) in targets.iter_mut() {
             hp.current_hp -= attack.damage;
             if hp.is_dead() {
                 commands.entity(entity).despawn_recursive();
@@ -94,8 +94,8 @@ pub fn on_attack(
     player: Query<Entity, (With<Living>, With<TextureAtlasSprite>, With<Animations>)>,
     mut event_reader: EventReader<WantsToAttack>,
 ) {
-    for entity in player.iter() {
-        for each in event_reader.iter() {
+    for each in event_reader.iter() {
+        for entity in player.iter() {
             if entity == each.attacker {
                 commands.entity(entity).insert(AttackAnim);
             }
