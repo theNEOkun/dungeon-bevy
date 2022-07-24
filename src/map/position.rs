@@ -44,6 +44,15 @@ impl Position {
         }
     }
 
+    pub fn from_index(pos: usize) -> Self {
+        let x = pos % (SCREEN_WIDTH as usize);
+        let y = pos / (SCREEN_WIDTH as usize);
+        Self {
+            x: x as f32,
+            y: y as f32
+        }
+    }
+
     pub fn zero() -> Self {
         Self::new(0.0, 0.0)
     }

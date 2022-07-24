@@ -24,13 +24,6 @@ pub struct Error;
 
 type Result<T> = std::result::Result<T, Error>;
 
-pub trait DijkstraMap {
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)>;
-
-    fn get_neighbours(&self, position: usize) -> Vec<Result<usize>>;
-
-}
-
 /// Holds the Map
 pub struct Map {
     pub tiles: Vec<TileType>,
@@ -51,6 +44,10 @@ pub fn map_idx_f(point: &Position) -> usize {
     ((point.y as i32 * SCREEN_WIDTH as i32) + point.x as i32) as usize
 }
 
+pub fn trans_to_index(trans: Transform) -> usize {
+    ((trans.translation.y.round() * SCREEN_WIDTH) + trans.translation.x.round()) as usize
+}
+
 /// Turns x and y into index
 ///
 /// applies map_idx on a new point
@@ -59,12 +56,7 @@ pub fn map_idx_int(x: i32, y: i32) -> usize {
 }
 
 pub fn idx_to_pos(pos: usize) -> Position {
-    let x = pos % SCREEN_WIDTH as usize;
-    let y = pos / SCREEN_WIDTH as usize;
-    Position {
-        x: x as f32,
-        y: y as f32
-    }
+    Position::from_index(pos)
 }
 
 impl Map {
@@ -120,6 +112,16 @@ impl Map {
         )
     }
 
+    /// Checks if a person can enter that point
+    ///
+    /// @returns true if it is enterable
+    pub fn can_enter_tile_idx(&self, point: usize) -> bool {
+        self.in_bounds_idx(point) && (
+            self[point] == TileType::Floor ||
+            self[point] == TileType::Exit
+        )
+    }
+
     /// Checks to see if a point is in bounds
     /// WIDTH > x >= 0 and HEIGHT > y >= 0
     ///
@@ -136,6 +138,15 @@ impl Map {
     /// @returns true if it is
     pub fn in_bounds_f(&self, point: &Position) -> bool {
         point.x >= 0.0 && point.x < SCREEN_WIDTH  && point.y >= 0.0 && point.y < SCREEN_HEIGHT
+    }
+
+    /// Checks to see if a point is in bounds
+    /// WIDTH > x >= 0 and HEIGHT > y >= 0
+    ///
+    /// @param point is the point to check 
+    /// @returns true if it is
+    pub fn in_bounds_idx(&self, point: usize) -> bool {
+        point > 0 && point < (SCREEN_WIDTH * SCREEN_HEIGHT) as usize
     }
 
     /// Checks t osee if a position is a valied exit
@@ -166,6 +177,10 @@ impl Map {
         let y = index / SCREEN_WIDTH as usize;
         Position::new(x as f32, y as f32)
     }
+
+    pub fn pos_to_index(&self, x: f32, y: f32) -> usize {
+        ((y * SCREEN_WIDTH) + x) as usize
+    }
     
     /// used to get the neighbours of a given cell
     ///
@@ -180,46 +195,50 @@ impl Map {
         let test_y = position.y;
 
         if (test_x + 1.0) < SCREEN_HEIGHT {
-            arr.push((self.point_to_index(&Position::new(position.x + 1.0, position.y)), 1));
+            let idx = self.pos_to_index(test_x + 1.0, test_y);
+            arr.push((idx, 1));
         }
         if (test_x - 1.0) > 0.0 {
-            arr.push((self.point_to_index(&Position::new(position.x - 1.0, position.y)), 1));
+            let idx = self.pos_to_index(test_x - 1.0, test_y);
+            arr.push((idx, 1));
         }
         if (test_y + 1.0) < SCREEN_WIDTH {
-            arr.push((self.point_to_index(&Position::new(position.x, position.y + 1.0)), 1));
+            let idx = self.pos_to_index(test_x, test_y + 1.0);
+            arr.push((idx, 1));
         }
         if (test_y - 1.0) > 0.0 {
-            arr.push((self.point_to_index(&Position::new(position.x, position.y - 1.0)), 1));
+            let idx = self.pos_to_index(test_x, test_y - 1.0);
+            arr.push((idx, 1));
         }
 
         arr
     }
 
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+    pub fn get_available_exits(&self, idx: usize) -> Vec<(usize, u32)> {
         let mut exits = Vec::new();
         let location = self.index_to_point(idx);
 
         if let Some(idx) = self.valid_exit(location, Position::new(-1.0, 0.0)) {
-            exits.push((idx, 1.0))
+            exits.push((idx, 1))
         }
         if let Some(idx) = self.valid_exit(location, Position::new(1.0, 0.0)) {
-            exits.push((idx, 1.0))
+            exits.push((idx, 1))
         }
         if let Some(idx) = self.valid_exit(location, Position::new(0.0, -1.0)) {
-            exits.push((idx, 1.0))
+            exits.push((idx, 1))
         }
         if let Some(idx) = self.valid_exit(location, Position::new(0.0, 1.0)) {
-            exits.push((idx, 1.0))
+            exits.push((idx, 1))
         }
 
         exits
     }
 
-    pub fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> usize {
+    pub fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
         Distance::Pythagoras.distance2d(
             self.index_to_point(idx1),
             self.index_to_point(idx2)
-        ).round() as usize
+        )
     }
 }
 

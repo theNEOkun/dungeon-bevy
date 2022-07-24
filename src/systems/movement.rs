@@ -41,10 +41,6 @@ pub fn walking_animation(
     }
 }
 
-fn point_to_index(trans: Transform) -> usize {
-    ((trans.translation.y * SCREEN_WIDTH + SCREEN_WIDTH).round()) as usize
-}
-
 pub fn chasing(
     enemies: Query<(Entity, &mut Transform), (With<Enemy>, With<ChasingPlayer>)>,
     mut player: Query<(Entity, &mut Transform), (With<Player>, Without<Enemy>)>,
@@ -57,16 +53,26 @@ pub fn chasing(
 
         let map = &map.map;
 
-        let e_index = point_to_index(*e_position);
-        let e_target = point_to_index(*target);
+        let e_index = map::trans_to_index(*e_position);
+        let e_target = map::trans_to_index(*target);
 
         let result = astar(
             &e_index,
             |p| map.get_neighbours(*p),
             |p| map.get_pathing_distance(*p, e_target) as u32,
-            |p| point_to_index(*target) == *p
+            |p| e_target == *p
         );
 
-        println!("{result}");
+        if let Some(result) = result {
+            if result.1 > 1 {
+            let destination = Position::from_index(result.0[1]).normalize();
+            event_writer.send(
+                WantsToMove {
+                    entity: e_entity,
+                    destination
+                }
+            )
+            }
+        }
     }
 }
