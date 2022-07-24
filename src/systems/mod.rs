@@ -10,7 +10,7 @@ impl Plugin for Systems {
     fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_update(Stages::Start)
-                .with_run_criteria(FixedTimestep::step(TIME_STEP * 10.0))
+                .with_run_criteria(FixedTimestep::step(TIME_STEP / 10.0))
                 .with_system(movement::chasing)
         );
         app.add_system_set(

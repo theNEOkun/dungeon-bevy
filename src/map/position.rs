@@ -14,7 +14,7 @@ impl Position {
         }
     }
 
-    pub fn new_from_tuple((x, y): (f32, f32)) -> Self {
+    pub fn from_tuple((x, y): (f32, f32)) -> Self {
         Self {
             x,
             y
@@ -30,7 +30,7 @@ impl Position {
         }
     }
 
-    pub fn new_from_position(pos: PositionI) -> Self {
+    pub fn from_position(pos: PositionI) -> Self {
         Self {
             x: pos.x as f32,
             y: pos.y as f32
@@ -74,7 +74,7 @@ impl Position {
         self.x == 0.0 && self.y == 0.0
     }
 
-    pub fn normalize(&self) -> Self {
+    pub fn normalize(self) -> Self {
         let length = f32::sqrt((self.x * self.x) + (self.y * self.y));
         Self {
             x: self.x / length,

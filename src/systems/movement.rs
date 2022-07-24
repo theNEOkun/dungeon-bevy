@@ -68,7 +68,7 @@ pub fn chasing(
 
         if let Some(result) = result {
             if result.1 > 1 {
-                let destination = Position::from_index(result.0[1]).normalize();
+                let destination = (Position::from_index(result.0[1]) - Position::from_transform(*e_position)).normalize();
                 commands
                     .entity(e_entity)
                     .insert(Movement { goal: destination });
