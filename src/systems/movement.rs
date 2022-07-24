@@ -1,7 +1,10 @@
 use crate::prelude::*;
 
 pub fn check_for_collisions(
-    mut player: Query<(Entity, &mut Transform, &mut Living), (With<TextureAtlasSprite>, With<AnimDirection>)>,
+    mut player: Query<
+        (Entity, &mut Transform, &mut Living),
+        (With<TextureAtlasSprite>, With<AnimDirection>),
+    >,
     mut event_reader: EventReader<WantsToMove>,
     time: Res<Time>,
 ) {
@@ -42,9 +45,9 @@ pub fn walking_animation(
 }
 
 pub fn chasing(
+    mut commands: Commands,
     enemies: Query<(Entity, &mut Transform), (With<Enemy>, With<ChasingPlayer>)>,
     mut player: Query<(Entity, &mut Transform), (With<Player>, Without<Enemy>)>,
-    mut event_writer: EventWriter<WantsToMove>,
     mut event_writer_attack: EventWriter<WantsToAttack>,
     map: Res<MapBuilder>,
 ) {
@@ -60,19 +63,29 @@ pub fn chasing(
             &e_index,
             |p| map.get_neighbours(*p),
             |p| map.get_pathing_distance(*p, e_target) as u32,
-            |p| e_target == *p
+            |p| e_target == *p,
         );
 
         if let Some(result) = result {
             if result.1 > 1 {
-            let destination = Position::from_index(result.0[1]).normalize();
-            event_writer.send(
-                WantsToMove {
-                    entity: e_entity,
-                    destination
-                }
-            )
+                let destination = Position::from_index(result.0[1]).normalize();
+                commands
+                    .entity(e_entity)
+                    .insert(Movement { goal: destination });
             }
         }
+    }
+}
+
+pub fn make_move(
+    enemies: Query<(Entity, &mut Movement)>,
+    mut event_writer: EventWriter<WantsToMove>,
+) {
+    for (e_entity, destination) in enemies.iter() {
+        let destination = destination.goal;
+        event_writer.send(WantsToMove {
+            entity: e_entity,
+            destination,
+        })
     }
 }

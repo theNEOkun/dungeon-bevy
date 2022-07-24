@@ -41,6 +41,11 @@ pub struct Animations {
 }
 
 #[derive(Component)]
+pub struct Movement {
+    pub goal: Position,
+}
+
+#[derive(Component)]
 pub struct AttackAnim;
 
 #[derive(Component, Deref, DerefMut)]
