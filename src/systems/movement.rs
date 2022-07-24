@@ -46,7 +46,7 @@ pub fn walking_animation(
 
 pub fn chasing(
     mut commands: Commands,
-    enemies: Query<(Entity, &mut Transform), (With<Enemy>, With<ChasingPlayer>)>,
+    enemies: Query<(Entity, &mut Transform), (With<Enemy>, With<ChasingPlayer>, Without<Attacked>)>,
     mut player: Query<(Entity, &mut Transform), (With<Player>, Without<Enemy>)>,
     mut event_writer_attack: EventWriter<WantsToAttack>,
     map: Res<MapBuilder>,
@@ -58,18 +58,24 @@ pub fn chasing(
 
         let e_index = map::trans_to_index(*e_position);
         let e_target = map::trans_to_index(*target);
-
+ 
         let result = astar(
             &e_index,
-            |p| map.get_neighbours(*p),
-            |p| map.get_pathing_distance(*p, e_target) as u32,
+            |p| {
+                let neighs = map.get_neighbours(*p);
+                neighs
+            },
+            |p| {
+                let distance = map.get_pathing_distance(*p, e_target) as u32;
+                distance
+            },
             |p| e_target == *p,
         );
 
         if let Some(result) = result {
             if result.1 > 1 {
                 let move_to = Position::from_index(result.0[1]);
-                if move_to == *target {
+                if result.0[1] == e_target {
                     event_writer_attack.send(
                         WantsToAttack {
                             attacker: e_entity
@@ -80,9 +86,12 @@ pub fn chasing(
                 commands
                     .entity(e_entity)
                     .insert(Movement { goal: destination });
-
                 }
             }
+        } else {
+            commands
+                .entity(e_entity)
+                .remove::<Movement>();
         }
     }
 }

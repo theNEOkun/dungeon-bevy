@@ -6,6 +6,7 @@ use std::cmp::{max, min};
 pub enum Distance {
     Pythagoras,
     PythagorasSquared,
+    Chebyshev,
 }
 
 impl Distance {
@@ -15,6 +16,7 @@ impl Distance {
         match self {
             Self::Pythagoras => distance2d_pythagoras(start, end),
             Self::PythagorasSquared => distance2d_pythagoras_squared(start, end),
+            Self::Chebyshev => distance2d_chebyshev(start, end),
         }
     }
 
@@ -24,6 +26,7 @@ impl Distance {
         match self {
             Self::Pythagoras => distance2d_pythagoras(start, end),
             Self::PythagorasSquared => distance2d_pythagoras_squared(start, end),
+            Self::Chebyshev => distance2d_chebyshev(start, end),
         }
     }
 }
@@ -37,4 +40,11 @@ fn distance2d_pythagoras_squared(start: (i32, i32), end: (i32, i32)) -> f32 {
 fn distance2d_pythagoras(start: (i32, i32), end: (i32, i32)) -> f32 {
     let result = distance2d_pythagoras_squared(start, end);
     f32::sqrt(result)
+}
+
+fn distance2d_chebyshev(start: (i32, i32), end: (i32, i32)) -> f32 {
+    std::cmp::max(
+        i32::abs(start.0 - end.0),
+        i32::abs(start.1 - end.1),
+    ) as f32
 }
