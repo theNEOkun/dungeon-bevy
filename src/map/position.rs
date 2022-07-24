@@ -21,7 +21,14 @@ impl Position {
         }
     }
 
-    pub fn new_from_usize(x: usize, y: usize) -> Self {
+    pub fn from_pos(x: f32, y: f32) -> Self {
+        Self {
+            x,
+            y
+        }
+    }
+
+    pub fn from_usize(x: usize, y: usize) -> Self {
         let x = x as f32;
         let y = y as f32;
         Self {

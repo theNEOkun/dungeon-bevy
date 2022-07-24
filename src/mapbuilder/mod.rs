@@ -152,7 +152,7 @@ pub fn make_map(
     for index in 0..mb.map.tiles.len() {
         let x = index % SCREEN_WIDTH as usize;
         let y = index / SCREEN_WIDTH as usize;
-        let pos = Position::new_from_usize(x, y);
+        let pos = Position::from_usize(x, y);
         let tile = mb.map[&pos];
         let (tile, extra) = match tile {
             TileType::Wall => (b'#' as usize, Some(Wall)),
@@ -182,32 +182,43 @@ pub fn make_map(
     }
     let mut rng = thread_rng();
     for each in &mb.monster_spawns {
-        let thing = match rng.gen_range(0..2) {
-            0 => b'g',
-            _ => b'o',
+        let (thing, info) = match rng.gen_range(0..2) {
+            0 => (
+                b'o',
+                Living {
+                    speed: 1.0,
+                    current_hp: 1,
+                    max_hp: 1,
+                },
+            ),
+            _ => (
+                b'g',
+                Living {
+                    speed: 2.0,
+                    current_hp: 1,
+                    max_hp: 1,
+                },
+            ),
         };
-        commands.spawn_bundle(
-            SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle.clone(),
-            sprite: TextureAtlasSprite {
-                index: thing as usize,
-                custom_size: Some(Vec2::new(1.0, 1.0)),
+        commands
+            .spawn_bundle(SpriteSheetBundle {
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    index: thing as usize,
+                    custom_size: Some(Vec2::new(1.0, 1.0)),
+                    ..default()
+                },
+                transform: Transform::from_xyz(each.x, each.y, 100.0),
                 ..default()
-            },
-            transform: Transform::from_xyz(each.x, each.y, 100.0),
-            ..default()
-        })
-        .insert(Living {
-            speed: 1.0,
-            current_hp: 1,
-            max_hp: 1,
-        })
-        .insert(ChasingPlayer)
-        .insert(AnimDirection::Down)
-        .insert(Enemy)
-        .insert(RigidBody::Dynamic).insert(Collider::capsule_y(0.1, 0.5))
-        .insert(GravityScale(0.0))
-        .insert(LockedAxes::ROTATION_LOCKED);
+            })
+            .insert(info)
+            .insert(ChasingPlayer)
+            .insert(AnimDirection::Down)
+            .insert(Enemy)
+            .insert(RigidBody::Dynamic)
+            .insert(Collider::capsule_y(0.1, 0.5))
+            .insert(GravityScale(0.0))
+            .insert(LockedAxes::ROTATION_LOCKED);
     }
     options.player_start = mb.player_start;
     state.set(Stages::Start).unwrap();

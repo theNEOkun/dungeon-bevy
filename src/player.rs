@@ -38,7 +38,8 @@ pub fn spawn_player(
             visibility: Visibility { is_visible: true },
             ..default()
         })
-        .insert(RigidBody::Dynamic).insert(Collider::capsule_y(0.1, 0.5))
+        .insert(RigidBody::Dynamic)
+        .insert(Collider::capsule_y(0.01, 0.45))
         .insert(GravityScale(0.0))
         .insert(Damping {
             linear_damping: 1.0,

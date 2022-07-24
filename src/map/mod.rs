@@ -177,11 +177,9 @@ impl Map {
                 let idx = destination.to_index();
                 Some(idx)
             } else {
-                println!("Inner");
                 None
             }
         } else {
-            println!("outer");
             None
         }
     }
