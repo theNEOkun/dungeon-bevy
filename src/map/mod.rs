@@ -59,6 +59,10 @@ pub fn idx_to_pos(pos: usize) -> Position {
     Position::from_index(pos)
 }
 
+pub fn tuple_to_idx(point: (f32, f32)) -> usize {
+    ((point.1.round() * SCREEN_WIDTH) + point.0.round()) as usize
+}
+
 impl Map {
     /// Creates a new Map, with all floor-tiles and false revealed_tiles
     pub fn new() -> Self {
@@ -122,6 +126,10 @@ impl Map {
         )
     }
 
+    pub fn can_enter_tile_tuple(&self, point: (f32, f32)) -> bool {
+        self.in_bounds_tuple(point) && (self[point] == TileType::Floor || self[point] == TileType::Exit)
+    }
+
     /// Checks to see if a point is in bounds
     /// WIDTH > x >= 0 and HEIGHT > y >= 0
     ///
@@ -133,7 +141,6 @@ impl Map {
 
     pub fn in_bounds_trans(&self, point: &Transform) -> bool {
         point.translation.x >= 0.0 && point.translation.x < SCREEN_WIDTH && point.translation.y >= 0.0 && point.translation.y < SCREEN_HEIGHT
-
     }
 
     pub fn in_bounds_tuple(&self, point: (f32, f32)) -> bool {
@@ -170,9 +177,11 @@ impl Map {
                 let idx = destination.to_index();
                 Some(idx)
             } else {
+                println!("Inner");
                 None
             }
         } else {
+            println!("outer");
             None
         }
     }
@@ -274,6 +283,22 @@ impl std::ops::Index<&Position> for Map {
 impl std::ops::IndexMut<&Position> for Map {
     fn index_mut(&mut self, point: &Position) -> &mut Self::Output {
         let idx = map_idx_f(point);
+        &mut self.tiles[idx]
+    }
+}
+
+impl std::ops::Index<(f32, f32)> for Map {
+    type Output = TileType;
+
+    fn index(&self, point: (f32, f32)) -> &Self::Output {
+        let idx = tuple_to_idx(point);
+        &self.tiles[idx]
+    }
+}
+
+impl std::ops::IndexMut<(f32, f32)> for Map {
+    fn index_mut(&mut self, point:(f32, f32)) -> &mut Self::Output {
+        let idx = tuple_to_idx(point);
         &mut self.tiles[idx]
     }
 }

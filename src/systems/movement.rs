@@ -64,13 +64,10 @@ pub fn chasing(
 
         let e_index = map::trans_to_index(*e_position);
         let e_target = map::trans_to_index(*target);
-
-        println!("My pos: {e_index}, alt: {:?}", e_position.translation);
-        println!("Target pos: {e_target}, alt: {:?}", target.translation);
  
         let result = astar(
             &e_index,
-            |p| map.get_neighbours(*p),
+            |p| map.get_available_exits(*p),
             |p| map.get_pathing_distance(*p, e_target) as u32,
             |p| e_target == *p,
         );
@@ -86,7 +83,6 @@ pub fn chasing(
                     )
                 } else {
                 let destination = move_to - *e_position;
-                println!("{destination:?}");
                 commands
                     .entity(e_entity)
                     .insert(Movement { goal: destination.normalize() });
