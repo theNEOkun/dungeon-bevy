@@ -74,16 +74,19 @@ pub fn attack(
 
 pub fn after_attack(
     mut commands: Commands,
-    mut targets: Query<(Entity, &mut Attacked, &mut Living)>,
+    mut targets: Query<(&mut Attacked, &Parent)>,
+    mut real_targets: Query<(Entity, &mut Living)>,
     mut event: EventReader<Attack>,
 ) {
     for _ in event.iter() {
-        for (entity, attack, mut hp) in targets.iter_mut() {
-            hp.current_hp -= attack.damage;
-            if hp.is_dead() {
-                commands.entity(entity).despawn_recursive();
+        for (attack, parent) in targets.iter_mut() {
+            if let Ok((entity, mut hp)) = real_targets.get_mut(**parent) {
+                hp.current_hp -= attack.damage;
+                if hp.is_dead() {
+                    commands.entity(entity).despawn_recursive();
+                }
+                commands.entity(entity).remove::<Attacked>();
             }
-            commands.entity(entity).remove::<Attacked>();
         }
     }
 }

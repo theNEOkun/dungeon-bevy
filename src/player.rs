@@ -34,12 +34,20 @@ pub fn spawn_player(
                 custom_size: Some(Vec2::new(1.0, 2.0)),
                 ..default()
             },
-            transform: get_char(player_start),
+            transform: Transform {
+                translation: Vec3::new(player_start.x, player_start.y, 100.0),
+                scale: Vec3::new(1.0, 1.0, 1.0),
+                ..default()
+            },
             visibility: Visibility { is_visible: true },
             ..default()
         })
         .insert(RigidBody::Dynamic)
-        .insert(Collider::capsule_y(0.01, 0.45))
+        .with_children(|parent| {
+            parent
+                .spawn()
+                .insert(Collider::capsule_y(0.01, 0.45));
+        })
         .insert(GravityScale(0.0))
         .insert(Damping {
             linear_damping: 1.0,
@@ -73,14 +81,6 @@ pub fn spawn_player(
             },
         });
     commands.spawn_bundle(new_camera_2d());
-}
-
-fn get_char(player_start: Position) -> Transform {
-    Transform {
-        translation: Vec3::new(player_start.x, player_start.y, 100.0),
-        scale: Vec3::new(1.0, 1.0, 1.0),
-        ..default()
-    }
 }
 
 fn add_attack_anims(atlas: &mut TextureAtlas, curr_y: f32, size: usize) {
@@ -146,8 +146,7 @@ pub fn player_movement(
         let anim_dir = AnimDirection::match_position_prev(destination, *direction);
         if !destination.is_zero() {
             let destination = destination.normalize();
-            event_writer.send(
-                WantsToMove {
+            event_writer.send(WantsToMove {
                 entity,
                 destination,
             });

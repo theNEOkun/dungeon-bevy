@@ -216,7 +216,10 @@ pub fn make_map(
             .insert(AnimDirection::Down)
             .insert(Enemy)
             .insert(RigidBody::Dynamic)
-            .insert(Collider::capsule_y(0.1, 0.5))
+            .with_children(|parent| {
+                parent.spawn()
+                    .insert(Collider::capsule_y(0.01, 0.45));
+            })
             .insert(GravityScale(0.0))
             .insert(LockedAxes::ROTATION_LOCKED);
     }
