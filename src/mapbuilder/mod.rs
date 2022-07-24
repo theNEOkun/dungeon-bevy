@@ -24,7 +24,7 @@ pub struct MapBuilder {
 
 impl MapBuilder {
     pub fn new(rng: &mut ThreadRng) -> Self {
-        let mut arch = RoomsArchitect {};
+        let mut arch = EmptyArchitect {};
         arch.new(rng)
     }
 

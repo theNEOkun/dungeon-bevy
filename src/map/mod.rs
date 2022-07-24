@@ -131,6 +131,15 @@ impl Map {
         point.x >= 0 && point.x < SCREEN_WIDTH as i32 && point.y >= 0 && point.y < SCREEN_HEIGHT as i32
     }
 
+    pub fn in_bounds_trans(&self, point: &Transform) -> bool {
+        point.translation.x >= 0.0 && point.translation.x < SCREEN_WIDTH && point.translation.y >= 0.0 && point.translation.y < SCREEN_HEIGHT
+
+    }
+
+    pub fn in_bounds_tuple(&self, point: (f32, f32)) -> bool {
+        point.0 >= 0.0 && point.0 < SCREEN_WIDTH && point.1 >= 0.0 && point.1 < SCREEN_HEIGHT
+    }
+
     /// Checks to see if a point is in bounds
     /// WIDTH > x >= 0 and HEIGHT > y >= 0
     ///
@@ -158,7 +167,7 @@ impl Map {
         let destination = loc + delta;
         if self.in_bounds_f(&destination) {
             if self.can_enter_tile_f(&destination) {
-                let idx = self.point_to_index(&destination);
+                let idx = destination.to_index();
                 Some(idx)
             } else {
                 None
@@ -172,12 +181,6 @@ impl Map {
         ((pos.y * SCREEN_WIDTH) + pos.x) as usize
     }
 
-    pub fn index_to_point(&self, index: usize) -> Position {
-        let x = index % SCREEN_WIDTH as usize;
-        let y = index / SCREEN_WIDTH as usize;
-        Position::new(x as f32, y as f32)
-    }
-
     pub fn pos_to_index(&self, x: f32, y: f32) -> usize {
         ((y * SCREEN_WIDTH) + x) as usize
     }
@@ -189,7 +192,7 @@ impl Map {
     pub fn get_neighbours(&self, position: usize) -> Vec<(usize, u32)> {
         let mut arr: Vec<(usize, u32)> = Vec::new();
 
-        let position = self.index_to_point(position);
+        let position = Position::from_index(position);
 
         let test_x = position.x;
         let test_y = position.y;
@@ -216,7 +219,7 @@ impl Map {
 
     pub fn get_available_exits(&self, idx: usize) -> Vec<(usize, u32)> {
         let mut exits = Vec::new();
-        let location = self.index_to_point(idx);
+        let location = Position::from_index(idx);
 
         if let Some(idx) = self.valid_exit(location, Position::new(-1.0, 0.0)) {
             exits.push((idx, 1))
@@ -236,8 +239,8 @@ impl Map {
 
     pub fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
         Distance::Chebyshev.distance2d(
-            self.index_to_point(idx1),
-            self.index_to_point(idx2)
+            Position::from_index(idx1),
+            Position::from_index(idx2)
         )
     }
 }

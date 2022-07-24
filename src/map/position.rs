@@ -53,6 +53,10 @@ impl Position {
         }
     }
 
+    pub fn to_index(&self) -> usize {
+        ((self.y * SCREEN_WIDTH) + self.x) as usize
+    }
+
     pub fn zero() -> Self {
         Self::new(0.0, 0.0)
     }
@@ -62,8 +66,8 @@ impl Position {
         self.y <= other.y && self.y > (other.y - 1.0)
     }
 
-    pub fn as_tuple(&self) -> (&f32, &f32) {
-        (&self.x, &self.y)
+    pub fn as_tuple(&self) -> (f32, f32) {
+        (self.x, self.y)
     }
 
     pub fn integer_position(&self) -> (i32, i32) {
@@ -92,6 +96,16 @@ impl std::cmp::PartialEq<Position> for Position {
 impl std::cmp::PartialEq<Transform> for Position {
     fn eq(&self, other: &Transform) -> bool {
         self.x == other.translation.x && self.y == other.translation.y
+    }
+}
+
+impl std::cmp::PartialOrd<Transform> for Position {
+    fn partial_cmp(&self, other: &Transform) -> Option<std::cmp::Ordering> {
+        match self.x.partial_cmp(&other.translation.x) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        self.y.partial_cmp(&other.translation.y)
     }
 }
 
@@ -124,6 +138,17 @@ impl std::ops::Sub for Position {
         Self {
             x: self.x - rhs.x,
             y: self.y - rhs.y
+        }
+    }
+}
+
+impl std::ops::Sub<Transform> for Position {
+    type Output = Self;
+
+    fn sub(self, rhs: Transform) -> Self::Output {
+        Self {
+            x: self.x - rhs.translation.x,
+            y: self.y - rhs.translation.y,
         }
     }
 }

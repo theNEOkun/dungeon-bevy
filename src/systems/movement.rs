@@ -6,13 +6,19 @@ pub fn check_for_collisions(
         (With<TextureAtlasSprite>, With<AnimDirection>),
     >,
     mut event_reader: EventReader<WantsToMove>,
+    map: Res<MapBuilder>,
     time: Res<Time>,
 ) {
     for each in event_reader.iter() {
         for (entity, mut transform, living) in player.iter_mut() {
+            let test_transform = *transform;
             if each.entity == entity {
-                transform.translation.x += each.destination.x * living.speed * time.delta_seconds();
-                transform.translation.y += each.destination.y * living.speed * time.delta_seconds();
+                let goalx = transform.translation.x + each.destination.x;
+                let goaly = transform.translation.y + each.destination.y;
+                if map.map.in_bounds_tuple((goalx, goaly)) {
+                    transform.translation.x += each.destination.x * living.speed * time.delta_seconds();
+                    transform.translation.y += each.destination.y * living.speed * time.delta_seconds();
+                }
             }
         }
     }
@@ -58,17 +64,14 @@ pub fn chasing(
 
         let e_index = map::trans_to_index(*e_position);
         let e_target = map::trans_to_index(*target);
+
+        println!("My pos: {e_index}, alt: {:?}", e_position.translation);
+        println!("Target pos: {e_target}, alt: {:?}", target.translation);
  
         let result = astar(
             &e_index,
-            |p| {
-                let neighs = map.get_neighbours(*p);
-                neighs
-            },
-            |p| {
-                let distance = map.get_pathing_distance(*p, e_target) as u32;
-                distance
-            },
+            |p| map.get_neighbours(*p),
+            |p| map.get_pathing_distance(*p, e_target) as u32,
             |p| e_target == *p,
         );
 
@@ -82,10 +85,11 @@ pub fn chasing(
                         }
                     )
                 } else {
-                let destination = (move_to - Position::from_transform(*e_position)).normalize();
+                let destination = move_to - *e_position;
+                println!("{destination:?}");
                 commands
                     .entity(e_entity)
-                    .insert(Movement { goal: destination });
+                    .insert(Movement { goal: destination.normalize() });
                 }
             }
         } else {
