@@ -46,7 +46,8 @@ pub fn spawn_player(
         .with_children(|parent| {
             parent
                 .spawn()
-                .insert(Collider::capsule_y(0.01, 0.45));
+                .insert(Collider::capsule_y(0.01, 0.45))
+                .insert(Transform::from_xyz(0.0, 1000.0, 0.0));
         })
         .insert(GravityScale(0.0))
         .insert(Damping {
