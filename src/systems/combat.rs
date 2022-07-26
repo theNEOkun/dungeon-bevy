@@ -36,7 +36,6 @@ pub fn attack(
     mut commands: Commands,
     rapier_context: Res<RapierContext>,
     attacker: Query<(Entity, &Animations, &Weapon, &Transform, &AnimDirection)>,
-    attacked: Query<Entity, Without<Attacked>>,
 ) {
     let shape = Collider::ball(0.25);
     let shape_rot = 0.0;
